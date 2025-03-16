@@ -8,13 +8,13 @@ namespace MornNovel
 {
     public class MornNovelSceneAddState : StateBehaviour
     {
-        [SerializeField, Label("null可")] private string _novelAddress;
+        [SerializeField, Label("null可")] private MornNovelAddress _novelAddress;
         [SerializeField] private StateLink _onNovelEnd;
         [Inject] private MornNovelService _novelManager;
 
         public override async void OnStateBegin()
         {
-            if (!string.IsNullOrEmpty(_novelAddress))
+            if (!_novelAddress.IsNullOrEmpty())
             {
                 _novelManager.SetNovelAddress(_novelAddress);
             }

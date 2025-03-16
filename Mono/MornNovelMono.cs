@@ -20,12 +20,14 @@ namespace MornNovel
 
         public bool IsNovelRead()
         {
-            return _novelManager.IsNovelRead(Key);
+            var address = new MornNovelAddress(Key);
+            return _novelManager.IsNovelRead(address);
         }
 
         public void SetNovelRead()
         {
-            _novelManager.SetNovelRead(Key);
+            var address = new MornNovelAddress(Key);
+            _novelManager.SetNovelRead(address);
         }
     }
 }

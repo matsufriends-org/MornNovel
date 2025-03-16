@@ -28,7 +28,7 @@ namespace MornNovel
         [SerializeField, ShowIf(nameof(IsChangeScene)), Label("遷移先のシーン")]
         private MornSceneObject _scene;
         [SerializeField, ShowIf(nameof(IsChangeNovel)), Label("遷移先のノベル")] 
-        private string _novelAddress;
+        private MornNovelAddress _address;
         [Inject] private MornTransitionCtrl _transitionCtrl;
         [Inject] private MornBeatControllerMono _beatController;
         [Inject] private MornNovelSettings _settings;
@@ -68,7 +68,7 @@ namespace MornNovel
 
             if (IsChangeNovel)
             {
-                _novelManager.SetNovelAddress(_novelAddress);
+                _novelManager.SetNovelAddress(_address);
                 SceneManager.LoadScene(MornNovelGlobal.I.NovelScene);
             }
 

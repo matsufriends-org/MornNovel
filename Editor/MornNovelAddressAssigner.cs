@@ -26,7 +26,7 @@ namespace MornNovel
 
             // Main グループを取得または作成
             var groupName = global.AddressGroupName;
-            var prefix = global.AddressPrefix;
+            var ignoreAddressPrefix = global.IgnoreAddressPrefix;
             var labelTag = global.AddressLabelTag;
             var group = settings.FindGroup(groupName);
             if (global == null)
@@ -46,8 +46,16 @@ namespace MornNovel
                     continue;
                 }
 
-                var assetName = prefab.name;
-                var address = string.IsNullOrEmpty(prefix) ? assetName : $"{prefix}/{assetName}";
+                var address = assetPath;
+                if (!string.IsNullOrEmpty(ignoreAddressPrefix) && address.StartsWith(ignoreAddressPrefix))
+                {
+                    address = address[ignoreAddressPrefix.Length..];
+                }
+
+                if (address.EndsWith(".prefab"))
+                {
+                    address = address[..^7];
+                }
 
                 // 既に設定されている場合はスキップ
                 var entry = settings.FindAssetEntry(guid);

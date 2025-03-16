@@ -4,26 +4,26 @@ namespace MornNovel
 {
     public sealed class MornNovelService
     {
-        private readonly Func<string, bool> _isGetNovelReadGetNovelRead;
-        private readonly Action<string> _onNovelRead;
+        private readonly Func<MornNovelAddress, bool> _isGetNovelReadGetNovelRead;
+        private readonly Action<MornNovelAddress> _onNovelRead;
         private readonly Func<bool> _getInput;
-        public string CurrentNovelAddress { get; private set; }
+        public MornNovelAddress CurrentNovelAddress { get; private set; }
 
-        public MornNovelService(Func<string, bool> getNovelRead, Action<string> onNovelRead, Func<bool> getInput)
+        public MornNovelService(Func<MornNovelAddress, bool> getNovelRead, Action<MornNovelAddress> onNovelRead, Func<bool> getInput)
         {
             _isGetNovelReadGetNovelRead = getNovelRead;
             _onNovelRead = onNovelRead;
             _getInput = getInput;
         }
 
-        public bool IsNovelRead(string key)
+        public bool IsNovelRead(MornNovelAddress address)
         {
-            return _isGetNovelReadGetNovelRead(key);
+            return _isGetNovelReadGetNovelRead(address);
         }
 
-        public void SetNovelRead(string key)
+        public void SetNovelRead(MornNovelAddress address)
         {
-            _onNovelRead(key);
+            _onNovelRead(address);
         }
 
         public bool Input()
@@ -31,7 +31,7 @@ namespace MornNovel
             return _getInput();
         }
 
-        public void SetNovelAddress(string novelAddress)
+        public void SetNovelAddress(MornNovelAddress novelAddress)
         {
             CurrentNovelAddress = novelAddress;
         }
