@@ -1,0 +1,31 @@
+{
+    "name": "MornNovel",
+    "rootNamespace": "MornNovel",
+    "references": [
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:69448af7b92c7f342b298e06a37122aa",
+        "GUID:84651a3751eca9349aac36a66bba901b",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:e623bc35d2e040d4d81ac786178e2a6a",
+        "GUID:329d7b58fe543b840b19e4c5e22d7708",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:b0214a6008ed146ff8f122a6a9c2f6cc",
+        "GUID:8cc21ec2dd30faf40a7d0371faa0b2c0",
+        "GUID:7e682f257eca24db98eea43732311907",
+        "GUID:1a328b9299f874e829993ee74d070a37",
+        "GUID:9fb3b15b1474476cbe64c6bd63468fb6",
+        "GUID:0fd203e80619f1740a81d10395180f8f",
+        "GUID:429a48e5055f1224b8437927466fd54a",
+        "GUID:992007d8ab89449794b291c1296d09f5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

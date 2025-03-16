@@ -1,0 +1,159 @@
+﻿using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.UI;
+using VContainer;
+using VContainer.Unity;
+
+namespace MornNovel
+{
+    public sealed class MornNovelControllerMono : MonoBehaviour
+    {
+        [SerializeField] private AudioSource _novelAudioSource;
+        [SerializeField] private MornNovelBubbleMono _bubble;
+        [SerializeField] private Image _backgroundA;
+        [SerializeField] private Image _backgroundB;
+        [SerializeField] private Transform _charaParent;
+        [SerializeField] private MornNovelCharaMono _charaPrefab;
+        public AudioMixerGroup AudioMixerGroup => _novelAudioSource.outputAudioMixerGroup;
+        [Inject] private MornNovelSettings _novelSettings;
+        [Inject] private IObjectResolver _resolver;
+        private bool _usingBackgroundA;
+        private CancellationTokenSource _cts;
+        private readonly Dictionary<MornNovelTalkerSo, MornNovelCharaMono> _cachedCharaDict = new();
+        private Image Current => _usingBackgroundA ? _backgroundA : _backgroundB;
+        private Image Next => _usingBackgroundA ? _backgroundB : _backgroundA;
+
+        private MornNovelCharaMono InstantiateImpl()
+        {
+            var instance = _resolver.Instantiate(_charaPrefab, _charaParent);
+            var trans = instance.transform;
+            trans.localPosition = new Vector3(
+                trans.localPosition.x,
+                _novelSettings.HeightUnfocus,
+                trans.localPosition.z);
+            return instance;
+        }
+
+        private void Start()
+        {
+            _bubble.HideAsync(true).Forget();
+        }
+
+        public async UniTask BubbleHideAsync()
+        {
+            await _bubble.HideAsync();
+        }
+
+        public async UniTask SetBackgroundAsync(Sprite sprite, bool isImmediate, CancellationToken ct = default)
+        {
+            _cts?.Cancel();
+            Next.color = new Color(1, 1, 1, 0);
+            Next.sprite = sprite;
+            Next.transform.SetAsLastSibling();
+            if (isImmediate)
+            {
+                _cts = null;
+                Next.SetAlpha(1);
+            }
+            else
+            {
+                await Next.DOFade(1, _novelSettings.BackgroundFadeSec, ct);
+            }
+
+            _usingBackgroundA = !_usingBackgroundA;
+        }
+
+        public async UniTask RemoveAllAsync(CancellationToken ct = default)
+        {
+            _cts?.Cancel();
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            var fadeDurationA = _novelSettings.BackgroundFadeSec * _backgroundA.color.a;
+            var fadeDurationB = _novelSettings.BackgroundFadeSec * _backgroundB.color.a;
+            var taskA = _backgroundA.DOFade(0, fadeDurationA, _cts.Token);
+            var taskB = _backgroundB.DOFade(0, fadeDurationB, _cts.Token);
+            await UniTask.WhenAll(taskA, taskB).SuppressCancellationThrow();
+        }
+
+        public MornNovelCharaMono GetChara(MornNovelTalkerSo talkerSo)
+        {
+            if (_cachedCharaDict.TryGetValue(talkerSo, out var chara))
+            {
+                return chara;
+            }
+
+            _cachedCharaDict[talkerSo] = InstantiateImpl();
+            return _cachedCharaDict[talkerSo];
+        }
+
+        public async UniTask AllHideAsync(CancellationToken ct = default)
+        {
+            var taskList = new List<UniTask>();
+            foreach (var chara in _cachedCharaDict.Values)
+            {
+                taskList.Add(chara.HideAsync(ct: ct));
+            }
+
+            taskList.Add(_bubble.HideAsync(ct: ct));
+            await UniTask.WhenAll(taskList).SuppressCancellationThrow();
+        }
+
+        public void AllFocus()
+        {
+            foreach (var chara in _cachedCharaDict.Values)
+            {
+                chara.Focus();
+            }
+        }
+
+        public void AllDecreaseOrderInLayer()
+        {
+            foreach (var chara in _cachedCharaDict.Values)
+            {
+                chara.DecreaseOrderInLayer();
+            }
+        }
+
+        public void SetFocus(MornNovelTalkerSo talker)
+        {
+            foreach (var (key, _) in _cachedCharaDict)
+            {
+                if (key == talker)
+                {
+                    GetChara(key).Focus();
+                }
+                else
+                {
+                    GetChara(key).SetUnfocus();
+                }
+            }
+        }
+
+        public void SetBubble(MornNovelBubbleSo bubbleSo, MornNovelTalkerSo talker)
+        {
+            if (bubbleSo == null)
+            {
+                return;
+            }
+
+            _bubble.SetBubble(bubbleSo, talker);
+        }
+
+        public void SetWaitInputIcon(bool isShown)
+        {
+            _bubble.SetWaitInputIcon(isShown);
+        }
+
+        public void SetMessage(string message)
+        {
+            _bubble.SetMessage(message);
+        }
+
+        public void PlayOneShot(AudioClip audioClip)
+        {
+            _novelAudioSource.PlayOneShot(audioClip);
+        }
+    }
+}
