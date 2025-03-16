@@ -71,10 +71,20 @@ namespace MornNovel
         private async static UniTask DOAsync<T>(T startValue, T endValue, float duration, Func<T, T, float, T> rateFunc,
             Action<T> onUpdateValue, CancellationToken ct = default)
         {
+            // TODO Easingを設定できるように
             var elapsedTime = 0f;
             while (elapsedTime < duration)
             {
                 var rate = elapsedTime / duration;
+                // OutQuad
+                rate = 1 - (1 - rate) * (1 - rate);
+                
+                // EaseOutBack
+                // const float c1 = 1.70158f;
+                // const float c3 = c1 + 1;
+                // rate -= 1;
+                // rate = rate * rate * ((c3 + 1) * rate + c1) + 1;
+                
                 var value = rateFunc(startValue, endValue, rate);
                 onUpdateValue.Invoke(value);
                 elapsedTime += Time.deltaTime;

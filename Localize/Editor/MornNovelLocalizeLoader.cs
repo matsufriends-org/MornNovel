@@ -19,7 +19,7 @@ namespace MornNovel.Editor
             _arborFsm = arborFsm;
         }
 
-        public void UploadScenario(bool convertToFromKey = false, bool upload = true)
+        public void UploadScenario(bool convertToFromKey = false, bool upload = true, bool debugJson = false)
         {
             var state = _arborFsm.GetStateFromID(_arborFsm.startStateID);
             _mornLocalizeDictionary = new MornLocalizeDictionary(_arborFsm.name);
@@ -32,11 +32,16 @@ namespace MornNovel.Editor
                     break;
                 state = nextState;
             }
+            
+            var json = _mornLocalizeDictionary.ToJson();
+            if (debugJson)
+            {
+                Debug.Log(json);
+            }
 
             //jsonを作成
             if (upload)
             {
-                var json = _mornLocalizeDictionary.ToJson();
                 MornSpreadSheetUploader.UploadJson(_uploadUrl, json).Forget();
             }
         }

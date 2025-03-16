@@ -70,6 +70,14 @@ namespace MornNovel.Editor
             }
 
             var uploadUrl = MornNovelGlobal.I.UploadUrl;
+            
+            if (GUILayout.Button("Json出力"))
+            {
+                CheckArbor();
+                var loader = new MornNovelLocalizeBuilder(uploadUrl, _arborFsm);
+                loader.UploadScenario(false, false, true);
+            }
+            
             if (GUILayout.Button("シナリオアップロード + FromKeyに変換 + 更新"))
             {
                 CheckArbor();

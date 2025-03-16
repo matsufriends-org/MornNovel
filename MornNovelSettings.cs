@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MornSound;
+using UnityEngine;
 
 namespace MornNovel
 {
@@ -6,6 +7,7 @@ namespace MornNovel
     public sealed class MornNovelSettings : ScriptableObject
     {
         [Header("音")]
+        [Label("フェードタイプ")] public MornSoundVolumeType FadeVolumeType;
         [Label("ノベル決定音")] public AudioClip SubmitClip;
         [Header("フェード系")]
         [Label("BGMフェード時間")] public float BgmChangeSec = 1f;

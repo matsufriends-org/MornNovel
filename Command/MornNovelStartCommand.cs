@@ -2,6 +2,7 @@
 using Arbor;
 using Cysharp.Threading.Tasks;
 using MornBeat;
+using MornSound;
 using MornTransition;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,6 +18,7 @@ namespace MornNovel
         [SerializeField] private StateLink _nextState;
         [Inject] private MornNovelSettings _settings;
         [Inject] private MornTransitionCtrl _transitionCtrl;
+        [Inject] private MornSoundVolumeCore _volumeCore;
         [Inject] private MornBeatControllerMono _beatController;
 
         public override async void OnStateBegin()
@@ -32,19 +34,29 @@ namespace MornNovel
             var ct = CancellationTokenOnEnd;
             if (_beatMemo != null)
             {
-                list.Add(_beatController.StartAsync(
-                    new MornBeatStartInfo()
-                    {
-                        BeatMemo = _beatMemo,
-                        FadeDuration = _settings.BgmChangeSec,
-                        Ct = ct,
-                    }));
+                list.Add(
+                    _beatController.StartAsync(
+                        new MornBeatStartInfo()
+                        {
+                            BeatMemo = _beatMemo,
+                            FadeDuration = _settings.BgmChangeSec,
+                            Ct = ct,
+                        }));
             }
             else
             {
                 list.Add(_beatController.StopBeatAsync(_settings.BgmChangeSec, ct));
             }
 
+            list.Add(
+                _volumeCore.FadeAsync(
+                    new MornSoundVolumeFadeInfo
+                    {
+                        SoundVolumeType = _settings.FadeVolumeType,
+                        Duration = _settings.BgmChangeSec,
+                        IsFadeIn = true,
+                        CancellationToken = ct,
+                    }));
             list.Add(_transitionCtrl.ClearAsync(ct: ct));
             await UniTask.WhenAll(list).SuppressCancellationThrow();
             Transition(_nextState);
