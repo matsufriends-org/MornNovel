@@ -1,4 +1,5 @@
 ﻿using System;
+using UniRx;
 
 namespace MornNovel
 {
@@ -7,6 +8,8 @@ namespace MornNovel
         private readonly Func<MornNovelAddress, bool> _isGetNovelReadGetNovelRead;
         private readonly Action<MornNovelAddress> _onNovelRead;
         private readonly Func<bool> _getInput;
+
+        public bool Debug;
         public MornNovelAddress CurrentNovelAddress { get; private set; }
 
         public MornNovelService(Func<MornNovelAddress, bool> getNovelRead, Action<MornNovelAddress> onNovelRead, Func<bool> getInput)

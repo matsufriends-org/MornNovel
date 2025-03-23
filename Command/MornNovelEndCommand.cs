@@ -50,6 +50,8 @@ namespace MornNovel
                 taskList.Add(_beatController.StopBeatAsync(_settings.BgmChangeSec, ct));
             }
 
+            if (_novelManager.Debug) _endTransitionType = NovelEndTransitionType.シーンを閉じる;
+
             if (IsChangeScene || IsChangeNovel)
             {
                 taskList.Add(_transitionCtrl.FillAsync(_transitionType, ct: ct));
