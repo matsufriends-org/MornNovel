@@ -78,6 +78,8 @@ namespace MornNovel
             {
                 SceneManager.UnloadSceneAsync(gameObject.scene).WithCancellation(ct).Forget();
             }
+            
+            _novelManager.NovelEndOnNext();
         }
     }
 }

@@ -10,6 +10,8 @@ namespace MornNovel
         private readonly Func<bool> _getInput;
 
         public bool Debug;
+        public IObservable<Unit> OnNovelEnd => _onNovelEnd;
+        private readonly Subject<Unit> _onNovelEnd = new();
         public MornNovelAddress CurrentNovelAddress { get; private set; }
 
         public MornNovelService(Func<MornNovelAddress, bool> getNovelRead, Action<MornNovelAddress> onNovelRead, Func<bool> getInput)
@@ -17,6 +19,11 @@ namespace MornNovel
             _isGetNovelReadGetNovelRead = getNovelRead;
             _onNovelRead = onNovelRead;
             _getInput = getInput;
+        }
+
+        public void NovelEndOnNext()
+        {
+            _onNovelEnd.OnNext(Unit.Default);
         }
 
         public bool IsNovelRead(MornNovelAddress address)
