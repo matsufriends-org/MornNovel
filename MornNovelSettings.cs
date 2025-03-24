@@ -12,6 +12,11 @@ namespace MornNovel
         [Header("フェード系")]
         [Label("BGMフェード時間")] public float BgmChangeSec = 1f;
         [Label("背景フェード時間")] public float BackgroundFadeSec = 1f;
+
+        [Header("トランジション")] [Label("背景歪みトランジションMaterial")]
+        public Material DistortTransitionMaterial;
+
+        [Label("背景歪みトランジション時間")] public float DistortTransitionSec = 1f;
         [Header("Eye")]
         public Vector2 EyeCloseRange;
         public Vector2 EyeOpenRange;

@@ -59,6 +59,15 @@ namespace MornNovel
             }
         }
 
+        public static async UniTask DoMaterialFloat(this Image target, string propertyName, float endValue,
+            float duration,
+            CancellationToken ct = default)
+        {
+            if (target)
+                await DOAsync(target.material.GetFloat(propertyName), endValue, duration, Mathf.Lerp,
+                    x => target.material.SetFloat(propertyName, x), ct);
+        }
+
         public async static UniTask DOFade(this SpriteRenderer target, float endValue, float duration,
             CancellationToken ct = default)
         {
