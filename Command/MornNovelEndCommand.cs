@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using MornBeat;
 using MornScene;
+using MornSound;
 using MornTransition;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,8 +15,9 @@ namespace MornNovel
         private enum NovelEndTransitionType
         {
             他シーンへ遷移,
-            シーンを閉じる,
-            ノベルを読み込む,
+            ノベルシーンだけ消す,
+            次のノベルをこのまま読み込む,
+            次のノベルへトランジション,
         }
 
         public override string Tips => "ノベルを終了する";
@@ -23,7 +25,7 @@ namespace MornNovel
         private bool _isStopBgm = true;
         [SerializeField, Label("終了時の処理")]
         private NovelEndTransitionType _endTransitionType;
-        [SerializeField, ShowIf(nameof(IsChangeSceneOrChangeNovel)), Label("遷移時のトランジション")]
+        [SerializeField, ShowIf(nameof(IsNeedTransition)), Label("遷移時のトランジション")]
         private MornTransitionType _transitionType;
         [SerializeField, ShowIf(nameof(IsChangeScene)), Label("遷移先のシーン")]
         private MornSceneObject _scene;
@@ -33,10 +35,12 @@ namespace MornNovel
         [Inject] private MornBeatControllerMono _beatController;
         [Inject] private MornNovelSettings _settings;
         [Inject] private MornNovelService _novelManager;
+        [Inject] private MornSoundVolumeCore _volume;
         public bool IsChangeScene => _endTransitionType == NovelEndTransitionType.他シーンへ遷移;
-        private bool IsCloseScene => _endTransitionType == NovelEndTransitionType.シーンを閉じる;
-        private bool IsChangeNovel => _endTransitionType == NovelEndTransitionType.ノベルを読み込む;
-        private bool IsChangeSceneOrChangeNovel => IsChangeScene || IsChangeNovel;
+        private bool IsCloseScene => _endTransitionType == NovelEndTransitionType.ノベルシーンだけ消す;
+        private bool IsChangeNovel => _endTransitionType == NovelEndTransitionType.次のノベルをこのまま読み込む ||
+                                     _endTransitionType == NovelEndTransitionType.次のノベルへトランジション;
+        private bool IsNeedTransition => IsChangeScene || _endTransitionType == NovelEndTransitionType.次のノベルへトランジション;
 
         public override async void OnStateBegin()
         {
@@ -50,11 +54,18 @@ namespace MornNovel
                 taskList.Add(_beatController.StopBeatAsync(_settings.BgmChangeSec, ct));
             }
 
-            if (_novelManager.Debug) _endTransitionType = NovelEndTransitionType.シーンを閉じる;
+            if (_novelManager.Debug) _endTransitionType = NovelEndTransitionType.ノベルシーンだけ消す;
 
-            if (IsChangeScene || IsChangeNovel)
+            if (IsNeedTransition)
             {
-                taskList.Add(_transitionCtrl.FillAsync(_transitionType, ct: ct));
+                taskList.Add(_transitionCtrl.FillAsync(_transitionType, ct));
+                taskList.Add(_volume.FadeAsync(new MornSoundVolumeFadeInfo
+                {
+                    SoundVolumeType = _settings.FadeVolumeType,
+                    Duration = _settings.BgmChangeSec,
+                    IsFadeIn = false,
+                    CancellationToken = ct,
+                }));
             }
 
             if (IsCloseScene)
