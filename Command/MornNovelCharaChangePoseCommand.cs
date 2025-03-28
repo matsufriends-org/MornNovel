@@ -14,7 +14,7 @@ namespace MornNovel
         protected override void OnValidate()
         {
             base.OnValidate();
-            _previewTalker = _pose ? _pose.EyeOpen : null;
+            _previewTalker = _pose ? _pose.DefaultSprite : null;
         }
 
         public override void OnStateBegin()
