@@ -13,6 +13,7 @@ namespace MornNovel
         public IObservable<Unit> OnNovelEnd => _onNovelEnd;
         private readonly Subject<Unit> _onNovelEnd = new();
         public MornNovelAddress CurrentNovelAddress { get; private set; }
+        public MornNovelMono CurrentNovelPrefab { get; private set; }
 
         public MornNovelService(Func<MornNovelAddress, bool> getNovelRead, Action<MornNovelAddress> onNovelRead, Func<bool> getInput)
         {
@@ -39,6 +40,11 @@ namespace MornNovel
         public bool Input()
         {
             return _getInput();
+        }
+        
+        public void SetNovelPrefab(MornNovelMono prefab)
+        {
+            CurrentNovelPrefab = prefab;
         }
 
         public void SetNovelAddress(MornNovelAddress novelAddress)
