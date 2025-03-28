@@ -31,6 +31,10 @@ namespace MornNovel
             if (Time.time < _nextChangeTime) return;
 
             _currentIndex++;
+            if (_currentIndex >= Stills.Count)
+            {
+                _currentIndex = 0;
+            }
             var nextDuration = Random.Range(Stills[_currentIndex].TimeRange.x, Stills[_currentIndex].TimeRange.y);
             _nextChangeTime = Time.time + nextDuration;
         }
