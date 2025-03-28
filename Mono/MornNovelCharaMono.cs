@@ -30,11 +30,18 @@ namespace MornNovel
             {
                 return;
             }
-
-            foreach (var poseAnimation in _pose.Animations)
+            
+            if (_pose.Animations == null || _pose.Animations.Count == 0)
             {
-                poseAnimation.Update();
-                _renderer.sprite = poseAnimation.CurrentSprite;
+                _renderer.sprite = _pose.DefaultSprite;
+            }
+            else
+            {
+                foreach (var poseAnimation in _pose.Animations)
+                {
+                    poseAnimation.Update();
+                    _renderer.sprite = poseAnimation.CurrentSprite;
+                }
             }
         }
 
