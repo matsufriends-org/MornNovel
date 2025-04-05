@@ -33,14 +33,14 @@ namespace MornNovel
                 }
                 else
                 {
-                    Debug.Log($"NovelMono {address} is exists, but not MornNovelMono");
+                    Debug.Log($"NovelMono {address.Address} is exists, but not MornNovelMono");
                 }
 
                 Addressables.Release(handle);
             }
             else
             {
-                Debug.LogError($"Failed to load asset: {address}");
+                Debug.LogError($"Failed to load asset: {address.Address}");
             }
         }
     }
