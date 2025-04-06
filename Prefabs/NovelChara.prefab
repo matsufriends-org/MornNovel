@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 50348768512927152}
   - component: {fileID: 50348768512927155}
   m_Layer: 8
-  m_Name: Novel_Chara
+  m_Name: NovelChara
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
