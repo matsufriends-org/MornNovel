@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MornNovel
 {
-    [CreateAssetMenu(fileName = nameof(MornNovelSettings), menuName = "Novel/" + nameof(MornNovelSettings))]
+    [CreateAssetMenu(fileName = nameof(MornNovelSettings), menuName = "Morn/" + nameof(MornNovelSettings))]
     public sealed class MornNovelSettings : ScriptableObject
     {
         [Header("サウンド")]

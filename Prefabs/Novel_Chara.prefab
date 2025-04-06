@@ -49,8 +49,6 @@ MonoBehaviour:
   _parentX: {fileID: 50348769564905454}
   _parentY: {fileID: 50348769607259249}
   _pose: {fileID: 0}
-  _nextChangeTime: 0
-  _isEyeOpen: 0
 --- !u!1 &50348769355345456
 GameObject:
   m_ObjectHideFlags: 0

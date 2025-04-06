@@ -19,8 +19,8 @@ namespace MornNovel
                 _novelManager.SetNovelAddress(_novelAddress);
             }
 
+            await SceneManager.LoadSceneAsync(MornNovelGlobal.I.NovelScene, LoadSceneMode.Additive);
             var scene = SceneManager.GetSceneByName(MornNovelGlobal.I.NovelScene);
-            await SceneManager.LoadSceneAsync(scene.buildIndex, LoadSceneMode.Additive);
             while (scene.isLoaded)
             {
                 await UniTask.Yield(CancellationTokenOnEnd);

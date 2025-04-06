@@ -29,7 +29,8 @@ namespace MornNovel
             var ignoreAddressPrefix = global.IgnoreAddressPrefix;
             var labelTag = global.AddressLabelTag;
             var group = settings.FindGroup(groupName);
-            if (global == null)
+            
+            if (group == null)
             {
                 group = settings.CreateGroup(groupName, false, false, false, null);
                 MornNovelGlobal.Log($"グループ {groupName} を作成しました。");
