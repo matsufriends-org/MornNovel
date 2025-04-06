@@ -3,7 +3,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
-using Random = UnityEngine.Random;
 
 namespace MornNovel
 {
@@ -13,8 +12,6 @@ namespace MornNovel
         [SerializeField] private Transform _parentX;
         [SerializeField] private Transform _parentY;
         [SerializeField] [ReadOnly] private MornNovelPoseSo _pose;
-        [SerializeField] [ReadOnly] private float _nextChangeTime;
-        [SerializeField] [ReadOnly] private bool _isEyeOpen;
         [Inject] private MornNovelSettings _novelSettings;
         private CancellationTokenSource _ctsT = new();
         private CancellationTokenSource _ctsAlpha = new();
@@ -33,13 +30,18 @@ namespace MornNovel
             {
                 return;
             }
-
-            if (Time.time > _nextChangeTime)
+            
+            if (_pose.Animations == null || _pose.Animations.Count == 0)
             {
-                _isEyeOpen = !_isEyeOpen;
-                _renderer.sprite = _isEyeOpen ? _pose.EyeOpen : _pose.EyeClose;
-                var range = _isEyeOpen ? _novelSettings.EyeOpenRange : _novelSettings.EyeCloseRange;
-                _nextChangeTime = Time.time + Random.Range(range.x, range.y);
+                _renderer.sprite = _pose.DefaultSprite;
+            }
+            else
+            {
+                foreach (var poseAnimation in _pose.Animations)
+                {
+                    poseAnimation.Update();
+                    _renderer.sprite = poseAnimation.CurrentSprite;
+                }
             }
         }
 
@@ -77,10 +79,7 @@ namespace MornNovel
         public void SetPose(MornNovelPoseSo pose)
         {
             _pose = pose;
-            _isEyeOpen = true;
-            _renderer.sprite = pose.EyeOpen;
-            var range = _novelSettings.EyeOpenRange;
-            _nextChangeTime = Time.time + Random.Range(range.x, range.y);
+            foreach (var poseAnimation in _pose.Animations) poseAnimation.Initialize();
         }
 
         public async UniTask SpawnAsync(MornNovelCharaMoveType moveType = MornNovelCharaMoveType.ToInner,

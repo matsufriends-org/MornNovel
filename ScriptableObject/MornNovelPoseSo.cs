@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace MornNovel
 {
@@ -6,8 +7,10 @@ namespace MornNovel
     public sealed class MornNovelPoseSo : ScriptableObject
     {
         public MornNovelTalkerSo Talker;
-        [SpritePreview] public Sprite EyeOpen;
-        [SpritePreview] public Sprite EyeClose;
-        public Sprite Preview => EyeOpen;
+        [SpritePreview(100f)] public Sprite DefaultSprite;
+        public List<MornNovelPoseAnimation> Animations;
+        
+        // ViewableSearchAttributeで表示する用
+        public Sprite Preview => DefaultSprite;
     }
 }

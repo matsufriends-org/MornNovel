@@ -14,6 +14,12 @@ namespace MornNovel
 
         private async void Awake()
         {
+            if (_novelService.CurrentNovelPrefab != null)
+            {
+                _resolver.Instantiate(_novelService.CurrentNovelPrefab, transform);
+                return;
+            }
+            
             var address = _novelService.CurrentNovelAddress.IsNullOrEmpty() ? _debugNovelKey
                 : _novelService.CurrentNovelAddress;
             var handle = Addressables.LoadAssetAsync<GameObject>(address.Address);
@@ -27,14 +33,14 @@ namespace MornNovel
                 }
                 else
                 {
-                    Debug.Log($"NovelMono {address} is exists, but not MornNovelMono");
+                    Debug.Log($"NovelMono {address.Address} is exists, but not MornNovelMono");
                 }
 
                 Addressables.Release(handle);
             }
             else
             {
-                Debug.LogError($"Failed to load asset: {address}");
+                Debug.LogError($"Failed to load asset: {address.Address}");
             }
         }
     }

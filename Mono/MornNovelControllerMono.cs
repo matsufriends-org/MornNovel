@@ -11,6 +11,7 @@ namespace MornNovel
 {
     public sealed class MornNovelControllerMono : MonoBehaviour
     {
+        
         [SerializeField] private AudioSource _novelAudioSource;
         [SerializeField] private MornNovelBubbleMono _bubble;
         [SerializeField] private Image _backgroundA;
@@ -63,6 +64,23 @@ namespace MornNovel
                 await Next.DOFade(1, _novelSettings.BackgroundFadeSec, ct);
             }
 
+            _usingBackgroundA = !_usingBackgroundA;
+        }
+
+        public async UniTask SetBackgroundDistortTransitionAsync(Sprite prevSprite, Sprite nextSprite,
+            CancellationToken ct = default)
+        {
+            _cts?.Cancel();
+            Next.color = new Color(1, 1, 1, 0);
+            Next.sprite = nextSprite;
+            Next.SetAlpha(1);
+            Next.transform.SetAsLastSibling();
+            Next.material = _novelSettings.DistortTransitionMaterial;
+            Next.material.SetTexture("PrevTex", prevSprite.texture);
+            Next.material.SetTexture("_NextTex", nextSprite.texture);
+            Next.material.SetFloat("_Phase", 0);
+            await Next.DoMaterialFloat("_Phase", 1, _novelSettings.DistortTransitionSec, ct);
+            Next.material = null;
             _usingBackgroundA = !_usingBackgroundA;
         }
 

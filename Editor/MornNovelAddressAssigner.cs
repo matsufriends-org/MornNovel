@@ -69,6 +69,26 @@ namespace MornNovel
                     entry.address = address;
                     entry.SetLabel(labelTag, true, true);
                     MornNovelGlobal.Log($"アドレス {address} を設定しました。");
+                    
+                    //　依存しているアセットのアドレスを設定
+                    var dependencies = AssetDatabase.GetDependencies(assetPath, true);
+                    foreach (var dependency in dependencies)
+                    {
+                        if (dependency == assetPath)
+                        {
+                            continue;
+                        }
+
+                        var depGuid = AssetDatabase.AssetPathToGUID(dependency);
+                        var depEntry = settings.FindAssetEntry(depGuid);
+                        if (depEntry == null)
+                        {
+                            depEntry = settings.CreateOrMoveEntry(depGuid, group);
+                            depEntry.address = dependency;
+                            depEntry.SetLabel(labelTag, true, true);
+                            MornNovelGlobal.Log($"アドレス {dependency} を設定しました。");
+                        }
+                    }
                 }
             }
 
