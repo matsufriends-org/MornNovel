@@ -15,6 +15,7 @@ namespace MornNovel
         private static readonly int _bottomColor = Shader.PropertyToID("_BottomColor");
         private static readonly int _outlineColor = Shader.PropertyToID("_OutlineColor");
         [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private RectTransform _bubbleRect;
         [SerializeField] private RectTransform _nameRect;
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _messageText;
@@ -45,6 +46,7 @@ namespace MornNovel
             _canvasGroup.DOFade(1, duration, _cts.Token).Forget();
 
             // Bubble
+            _bubbleRect.anchoredPosition = bubbleSo.BubblePosition;
             _nameRect.anchoredPosition = bubbleSo.NamePosition;
             _bubbleImage.sprite = bubbleSo.SpeechBubble;
             _bubbleEdgeImage.sprite = bubbleSo.SpeechBubbleEdge;
