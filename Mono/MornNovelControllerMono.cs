@@ -92,7 +92,7 @@ namespace MornNovel
             var fadeDurationB = _novelSettings.BackgroundFadeSec * _backgroundB.color.a;
             var taskA = _backgroundA.DOFade(0, fadeDurationA, _cts.Token);
             var taskB = _backgroundB.DOFade(0, fadeDurationB, _cts.Token);
-            await UniTask.WhenAll(taskA, taskB).SuppressCancellationThrow();
+            await UniTask.WhenAll(taskA, taskB);
         }
 
         public MornNovelCharaMono GetChara(MornNovelTalkerSo talkerSo)
@@ -115,7 +115,7 @@ namespace MornNovel
             }
 
             taskList.Add(_bubble.HideAsync(ct: ct));
-            await UniTask.WhenAll(taskList).SuppressCancellationThrow();
+            await UniTask.WhenAll(taskList);
         }
 
         public void AllFocus()

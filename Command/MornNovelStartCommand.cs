@@ -58,7 +58,7 @@ namespace MornNovel
                         CancellationToken = ct,
                     }));
             list.Add(_transitionCtrl.ClearAsync(ct: ct));
-            await UniTask.WhenAll(list).SuppressCancellationThrow();
+            await UniTask.WhenAll(list);
             Transition(_nextState);
         }
     }

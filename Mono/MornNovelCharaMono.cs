@@ -103,7 +103,7 @@ namespace MornNovel
             _parentX.localPosition = localFromPos;
             var taskA = _parentX.DOLocalMoveX(0, _novelSettings.AnimDuration, _ctsX.Token);
             var taskB = _renderer.DOFade(1, _novelSettings.AnimDuration, _ctsAlpha.Token);
-            await UniTask.WhenAll(taskA, taskB).SuppressCancellationThrow();
+            await UniTask.WhenAll(taskA, taskB);
         }
 
         public async UniTask HideAsync(MornNovelCharaMoveType moveType = MornNovelCharaMoveType.ToOuter,
@@ -133,7 +133,7 @@ namespace MornNovel
                 _ctsAlpha = CancellationTokenSource.CreateLinkedTokenSource(ct);
                 var taskA = _parentX.DOLocalMoveX(aimX, _novelSettings.AnimDuration, _ctsX.Token);
                 var taskB = _renderer.DOFade(0, _novelSettings.AnimDuration, _ctsAlpha.Token);
-                await UniTask.WhenAll(taskA, taskB).SuppressCancellationThrow();
+                await UniTask.WhenAll(taskA, taskB);
             }
         }
 
