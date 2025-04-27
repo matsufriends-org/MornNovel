@@ -9,7 +9,6 @@ namespace MornNovel
         [Header("サウンド")]
         [Label("音量フェード対象")] public MornSoundVolumeType FadeVolumeType;
         [Label("BGMフェード時間")] public float BgmChangeSec = 1f;
-        [Label("ノベル決定音")] public AudioClip SubmitClip;
         [Header("トランジション")]
         [Label("背景シンプル切り替え時間")] public float BackgroundFadeSec = 1f;
         [Label("背景歪みトランジションMaterial")] public Material DistortTransitionMaterial;
@@ -23,9 +22,5 @@ namespace MornNovel
         [Label("フォーカス時の高さ")] public float HeightFocus = -0.8f;
         [Label("非フォーカス時の高さ")] public float HeightUnfocus = -1.2f;
         [Label("スケール")]public float PositionScale = 11;
-        [Header("メッセージ")]
-        [Label("文字再生待機時間")] public float Offset = 0.1f;
-        [Label("1文字送り時間")] public float CharInterval = 0.05f;
-        [Label("改行時間")] public float CharReturnInterval = 0.1f;
     }
 }

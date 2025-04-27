@@ -57,44 +57,19 @@ namespace MornNovel
                 controller.AllFocus();
             }
 
-            await UniTask.Delay(TimeSpan.FromSeconds(_novelSettings.Offset), cancellationToken: ct);
-            var context = GetText();
-            var sb = new StringBuilder();
-            var nextSeTime = 0f;
-            foreach (var c in context)
-            {
-                sb.Append(c);
-                controller.SetMessage(sb.ToString());
-                if (Time.time >= nextSeTime)
+            await MornNovelUtil.DOText(
+                GetText(),
+                controller.SetMessage,
+                () =>
                 {
-                    if (_talker.Clips.Length > 0)
-                    {
-                        var clip = _talker.Clips[UnityEngine.Random.Range(0, _talker.Clips.Length)];
-                        _novelController.PlayOneShot(clip);
-                    }
-                    nextSeTime = Time.time + _talker.ClipLength;
-                }
-
-                if (await WaitSecondsReturnSkipped(
-                    c == '\n' ? _novelSettings.CharReturnInterval : _novelSettings.CharInterval,
-                    CancellationTokenOnEnd))
-                {
-                    break;
-                }
-            }
-
-            controller.SetMessage(context);
-            controller.SetWaitInputIcon(true);
-            while (!_novelManager.Input())
-            {
-                await UniTask.Yield(ct);
-            }
-
-            _novelController.PlayOneShot(_novelSettings.SubmitClip);
-            // 次Fへ入力を渡さないために1F待機
-            await UniTask.Yield(ct);
-            controller.SetWaitInputIcon(false);
-            await UniTask.Delay(TimeSpan.FromSeconds(_novelSettings.Offset), cancellationToken: ct);
+                    var clip = _talker.Clips[UnityEngine.Random.Range(0, _talker.Clips.Length)];
+                    return (clip, _talker.ClipLength);
+                },
+                _novelController.PlayOneShot,
+                controller.SetWaitInputIcon,
+                true,
+                () => _novelManager.Input(),
+                CancellationTokenOnEnd);
             Transition(_stateLink);
         }
 

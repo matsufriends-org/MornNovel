@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -6,8 +7,75 @@ using UnityEngine.UI;
 
 namespace MornNovel
 {
-    internal static class MornNovelUtil
+    public static class MornNovelUtil
     {
+        public async static UniTask DOText(string context, Action<string> setText,
+            Func<(AudioClip clip, float interval)> getMessageClip, Action<AudioClip> playSe,
+            Action<bool> showWaitInputIcon, bool isWaitInput, Func<bool> submitFunc, CancellationToken ct = default)
+        {
+            setText("");
+            await UniTask.Delay(TimeSpan.FromSeconds(MornNovelGlobal.I.MessageOffset), cancellationToken: ct);
+            var sb = new StringBuilder();
+            var nextSeTime = 0f;
+            foreach (var c in context)
+            {
+                sb.Append(c);
+                setText(sb.ToString());
+                if (Time.time >= nextSeTime)
+                {
+                    var (clip, interval) = getMessageClip();
+                    if (clip != null)
+                    {
+                        playSe(clip);
+                        nextSeTime = Time.time + interval;
+                    }
+                }
+
+                var waitInterval = c == '\n' ? MornNovelGlobal.I.CharReturnInterval : MornNovelGlobal.I.CharInterval;
+                if (await WaitSecondsReturnSkipped(waitInterval, submitFunc, ct))
+                {
+                    break;
+                }
+            }
+
+            setText(context);
+            if (isWaitInput)
+            {
+                showWaitInputIcon(true);
+                while (!submitFunc())
+                {
+                    await UniTask.Yield(ct);
+                }
+
+                playSe(MornNovelGlobal.I.SubmitClip);
+                // 次Fへ入力を渡さないために1F待機
+                await UniTask.Yield(ct);
+                showWaitInputIcon(false);
+            }
+
+            await UniTask.Delay(TimeSpan.FromSeconds(MornNovelGlobal.I.MessageOffset), cancellationToken: ct);
+        }
+
+        private async static UniTask<bool> WaitSecondsReturnSkipped(float seconds, Func<bool> submitFunc,
+            CancellationToken ct = default)
+        {
+            var elapsedTime = 0f;
+            while (elapsedTime < seconds)
+            {
+                elapsedTime += Time.deltaTime;
+                if (submitFunc())
+                {
+                    // 次Fへ入力を渡さないために1F待機
+                    await UniTask.Yield(ct);
+                    return true;
+                }
+
+                await UniTask.Yield(ct);
+            }
+
+            return false;
+        }
+
         public async static UniTask DOLocalMove(this Transform target, Vector3 endValue, float duration,
             CancellationToken ct = default)
         {
@@ -60,12 +128,16 @@ namespace MornNovel
         }
 
         public static async UniTask DoMaterialFloat(this Image target, string propertyName, float endValue,
-            float duration,
-            CancellationToken ct = default)
+            float duration, CancellationToken ct = default)
         {
             if (target)
-                await DOAsync(target.material.GetFloat(propertyName), endValue, duration, Mathf.Lerp,
-                    x => target.material.SetFloat(propertyName, x), ct);
+                await DOAsync(
+                    target.material.GetFloat(propertyName),
+                    endValue,
+                    duration,
+                    Mathf.Lerp,
+                    x => target.material.SetFloat(propertyName, x),
+                    ct);
         }
 
         public async static UniTask DOFade(this SpriteRenderer target, float endValue, float duration,
@@ -87,13 +159,12 @@ namespace MornNovel
                 var rate = elapsedTime / duration;
                 // OutQuad
                 rate = 1 - (1 - rate) * (1 - rate);
-                
+
                 // EaseOutBack
                 // const float c1 = 1.70158f;
                 // const float c3 = c1 + 1;
                 // rate -= 1;
                 // rate = rate * rate * ((c3 + 1) * rate + c1) + 1;
-                
                 var value = rateFunc(startValue, endValue, rate);
                 onUpdateValue.Invoke(value);
                 elapsedTime += Time.deltaTime;

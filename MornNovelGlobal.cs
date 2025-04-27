@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using MornGlobal;
 using MornScene;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [assembly: InternalsVisibleTo("MornNovel.Editor")]
 namespace MornNovel
@@ -14,6 +15,10 @@ namespace MornNovel
         [SerializeField] private string _ignoreAddressPrefix;
         [SerializeField] private MornSceneObject _novelScene;
         [SerializeField] private string _uploadUrl;
+        public AudioClip SubmitClip;
+        public float MessageOffset = 0.1f;
+        public float CharInterval = 0.05f;
+        public float CharReturnInterval = 0.1f;
         protected override string ModuleName => nameof(MornNovel);
         public string AddressGroupName => _addressGroupName;
         public string AddressLabelTag => _addressLabelTag;
