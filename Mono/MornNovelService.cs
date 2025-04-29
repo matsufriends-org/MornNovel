@@ -5,7 +5,7 @@ namespace MornNovel
 {
     public sealed class MornNovelService
     {
-        private readonly Func<MornNovelAddress, bool> _isGetNovelReadGetNovelRead;
+        private readonly Func<MornNovelAddress, bool> _isNovelRead;
         private readonly Action<MornNovelAddress> _onNovelRead;
         private readonly Func<bool> _getInput;
 
@@ -15,9 +15,9 @@ namespace MornNovel
         public MornNovelAddress CurrentNovelAddress { get; private set; }
         public MornNovelMono CurrentNovelPrefab { get; private set; }
 
-        public MornNovelService(Func<MornNovelAddress, bool> getNovelRead, Action<MornNovelAddress> onNovelRead, Func<bool> getInput)
+        public MornNovelService(Func<MornNovelAddress, bool> novelRead, Action<MornNovelAddress> onNovelRead, Func<bool> getInput)
         {
-            _isGetNovelReadGetNovelRead = getNovelRead;
+            _isNovelRead = novelRead;
             _onNovelRead = onNovelRead;
             _getInput = getInput;
         }
@@ -29,7 +29,7 @@ namespace MornNovel
 
         public bool IsNovelRead(MornNovelAddress address)
         {
-            return _isGetNovelReadGetNovelRead(address);
+            return _isNovelRead(address);
         }
 
         public void SetNovelRead(MornNovelAddress address)
