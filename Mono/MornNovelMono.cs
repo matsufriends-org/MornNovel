@@ -31,12 +31,6 @@ namespace MornNovel
             }
         }
 
-        public bool IsNovelRead()
-        {
-            var address = new MornNovelAddress(ReadKey);
-            return _novelManager.IsNovelRead(address);
-        }
-
         public void SetNovelRead()
         {
             var address = new MornNovelAddress(ReadKey);

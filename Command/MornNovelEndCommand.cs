@@ -47,6 +47,10 @@ namespace MornNovel
             var novel = FindFirstObjectByType<MornNovelMono>();
             var controller = FindFirstObjectByType<MornNovelControllerMono>();
             novel.SetNovelRead();
+            if (!_novelManager.CurrentNovelAddress.IsNullOrEmpty())
+            {
+                _novelManager.SetNovelRead(_novelManager.CurrentNovelAddress);
+            }
             var taskList = new List<UniTask>();
             var ct = CancellationTokenOnEnd;
             if (_isStopBgm)
