@@ -32,7 +32,7 @@ namespace MornNovel
                 {
                     var cachedEnabled = GUI.enabled;
                     GUI.enabled = false;
-                    EditorGUI.PropertyField(normalRect, addressProperty);
+                    EditorGUI.PropertyField(normalRect, addressProperty, new GUIContent(property.displayName));
                     GUI.enabled = cachedEnabled;
                 }
                 if (GUI.Button(buttonRect1, "Select"))
