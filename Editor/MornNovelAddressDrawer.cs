@@ -40,7 +40,7 @@ namespace MornNovel
                     MornNovelAddressWindow.ShowWindow(addressProperty);
                 }
 
-                if (GUI.Button(buttonRect2, "Prefab"))
+                if (GUI.Button(buttonRect2, "Ping"))
                 {
                     var address = addressProperty.stringValue;
                     var settings = AddressableAssetSettingsDefaultObject.Settings;
