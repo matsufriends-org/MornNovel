@@ -1,4 +1,5 @@
 ﻿using MornSound;
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace MornNovel
@@ -22,5 +23,7 @@ namespace MornNovel
         [Label("フォーカス時の高さ")] public float HeightFocus = -0.8f;
         [Label("非フォーカス時の高さ")] public float HeightUnfocus = -1.2f;
         [Label("スケール")]public float PositionScale = 11;
+        [Header("カメラシェイク")]
+        [Label("プレハブ")] public CinemachineImpulseSource SourcePrefab;
     }
 }
