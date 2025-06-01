@@ -20,9 +20,15 @@ namespace MornNovel
         [Inject] private MornTransitionCtrl _transitionCtrl;
         [Inject] private MornSoundVolumeCore _volumeCore;
         [Inject] private MornBeatControllerMono _beatController;
+        [Inject] private MornNovelService _novelService;
 
         public override async void OnStateBegin()
         {
+            if (!_novelService.CurrentNovelAddress.IsNullOrEmpty())
+            {
+                _novelService.AtNovelStart(_novelService.CurrentNovelAddress);
+            }
+
             // 自分以外のシーンが存在したらエリアノベル判定
             if (SceneManager.sceneCount > 1)
             {

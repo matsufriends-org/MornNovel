@@ -24,9 +24,9 @@ namespace MornNovel
             
             var address = _novelService.CurrentNovelAddress.IsNullOrEmpty() ? _debugNovelKey
                 : _novelService.CurrentNovelAddress;
-            var handle = Addressables.LoadAssetAsync<GameObject>(address.Address);
+            var handle = Addressables.LoadAssetAsync<GameObject>(address.Key);
             // 一緒に依存アセットもロード
-            _dependencyHandle = Addressables.DownloadDependenciesAsync(address.Address);
+            _dependencyHandle = Addressables.DownloadDependenciesAsync(address.Key);
             await handle.Task;
             await _dependencyHandle.Task;
             if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
@@ -38,14 +38,14 @@ namespace MornNovel
                 }
                 else
                 {
-                    Debug.Log($"NovelMono {address.Address} is exists, but not MornNovelMono");
+                    Debug.Log($"NovelMono {address.Key} is exists, but not MornNovelMono");
                 }
 
                 Addressables.Release(handle);
             }
             else
             {
-                Debug.LogError($"Failed to load asset: {address.Address}");
+                Debug.LogError($"Failed to load asset: {address.Key}");
             }
         }
 

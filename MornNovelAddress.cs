@@ -7,7 +7,7 @@ namespace MornNovel
     public struct MornNovelAddress
     {
         [SerializeField] private string _address;
-        public string Address => _address;
+        public string Key => _address;
 
         public MornNovelAddress(string address)
         {

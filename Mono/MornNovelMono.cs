@@ -6,7 +6,7 @@ namespace MornNovel
     public sealed class MornNovelMono : MonoBehaviour
     {
         // 暫定
-        public string ReadKey
+        private string ReadKey
         {
             get
             {
@@ -20,6 +20,7 @@ namespace MornNovel
                 return $"{objectName}_Read";
             }
         }
+        public MornNovelAddress Address => new(ReadKey);
         [Inject] private MornNovelControllerMono _novelController;
         [Inject] private MornNovelService _novelManager;
 
@@ -29,12 +30,6 @@ namespace MornNovel
             {
                 audioSource.outputAudioMixerGroup = _novelController.AudioMixerGroup;
             }
-        }
-
-        public void SetNovelRead()
-        {
-            var address = new MornNovelAddress(ReadKey);
-            _novelManager.SetNovelRead(address);
         }
     }
 }

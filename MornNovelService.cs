@@ -6,25 +6,29 @@ namespace MornNovel
     public sealed class MornNovelService
     {
         private readonly Func<MornNovelAddress, bool> _isNovelRead;
-        private readonly Action<MornNovelAddress> _onNovelRead;
         private readonly Func<bool> _getInput;
-
         public bool Debug;
-        public IObservable<Unit> OnNovelEnd => _onNovelEnd;
-        private readonly Subject<Unit> _onNovelEnd = new();
+        private readonly Subject<MornNovelAddress> _onNovelStart = new();
+        private readonly Subject<MornNovelAddress> _onNovelEnd = new();
+        public IObservable<MornNovelAddress> OnNovelStart => _onNovelStart;
+        public IObservable<MornNovelAddress> OnNovelEnd => _onNovelEnd;
         public MornNovelAddress CurrentNovelAddress { get; private set; }
         public MornNovelMono CurrentNovelPrefab { get; private set; }
 
-        public MornNovelService(Func<MornNovelAddress, bool> novelRead, Action<MornNovelAddress> onNovelRead, Func<bool> getInput)
+        public MornNovelService(Func<MornNovelAddress, bool> novelRead, Func<bool> getInput)
         {
             _isNovelRead = novelRead;
-            _onNovelRead = onNovelRead;
             _getInput = getInput;
         }
 
-        public void NovelEndOnNext()
+        public void AtNovelStart(MornNovelAddress address)
         {
-            _onNovelEnd.OnNext(Unit.Default);
+            _onNovelStart.OnNext(address);
+        }
+
+        public void AtNovelEnd(MornNovelAddress address)
+        {
+            _onNovelEnd.OnNext(address);
         }
 
         public bool IsNovelRead(MornNovelAddress address)
@@ -32,16 +36,11 @@ namespace MornNovel
             return _isNovelRead(address);
         }
 
-        public void SetNovelRead(MornNovelAddress address)
-        {
-            _onNovelRead(address);
-        }
-
         public bool Input()
         {
             return _getInput();
         }
-        
+
         public void SetNovelPrefab(MornNovelMono prefab)
         {
             CurrentNovelPrefab = prefab;

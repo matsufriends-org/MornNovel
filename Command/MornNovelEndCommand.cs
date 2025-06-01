@@ -44,13 +44,12 @@ namespace MornNovel
 
         public override async void OnStateBegin()
         {
-            var novel = FindFirstObjectByType<MornNovelMono>();
-            var controller = FindFirstObjectByType<MornNovelControllerMono>();
-            novel.SetNovelRead();
             if (!_novelManager.CurrentNovelAddress.IsNullOrEmpty())
             {
-                _novelManager.SetNovelRead(_novelManager.CurrentNovelAddress);
+                _novelManager.AtNovelEnd(_novelManager.CurrentNovelAddress);
             }
+            
+            var controller = FindFirstObjectByType<MornNovelControllerMono>();
             var taskList = new List<UniTask>();
             var ct = CancellationTokenOnEnd;
             if (_isStopBgm)
@@ -93,8 +92,6 @@ namespace MornNovel
             {
                 SceneManager.UnloadSceneAsync(gameObject.scene).WithCancellation(ct).Forget();
             }
-            
-            _novelManager.NovelEndOnNext();
         }
     }
 }
