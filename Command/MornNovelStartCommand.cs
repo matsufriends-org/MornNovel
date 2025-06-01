@@ -24,13 +24,15 @@ namespace MornNovel
 
         public override async void OnStateBegin()
         {
+            // 自分以外のシーンが存在したら上乗せノベル判定
+            var isUpperNovel = SceneManager.sceneCount > 1;
+            
             if (!_novelService.CurrentNovelAddress.IsNullOrEmpty())
             {
-                _novelService.AtNovelStart(_novelService.CurrentNovelAddress);
+                _novelService.AtNovelStart(isUpperNovel, _novelService.CurrentNovelAddress);
             }
-
-            // 自分以外のシーンが存在したらエリアノベル判定
-            if (SceneManager.sceneCount > 1)
+            
+            if (isUpperNovel)
             {
                 Transition(_nextState);
                 return;

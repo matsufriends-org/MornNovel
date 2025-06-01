@@ -8,9 +8,9 @@ namespace MornNovel
         private readonly Func<MornNovelAddress, bool> _isNovelRead;
         private readonly Func<bool> _getInput;
         public bool Debug;
-        private readonly Subject<MornNovelAddress> _onNovelStart = new();
+        private readonly Subject<(bool, MornNovelAddress)> _onNovelStart = new();
         private readonly Subject<MornNovelAddress> _onNovelEnd = new();
-        public IObservable<MornNovelAddress> OnNovelStart => _onNovelStart;
+        public IObservable<(bool, MornNovelAddress)> OnNovelStart => _onNovelStart;
         public IObservable<MornNovelAddress> OnNovelEnd => _onNovelEnd;
         public MornNovelAddress CurrentNovelAddress { get; private set; }
         public MornNovelMono CurrentNovelPrefab { get; private set; }
@@ -21,9 +21,9 @@ namespace MornNovel
             _getInput = getInput;
         }
 
-        public void AtNovelStart(MornNovelAddress address)
+        public void AtNovelStart(bool isUpperNovel, MornNovelAddress address)
         {
-            _onNovelStart.OnNext(address);
+            _onNovelStart.OnNext((isUpperNovel, address));
         }
 
         public void AtNovelEnd(MornNovelAddress address)
