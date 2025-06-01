@@ -8,7 +8,7 @@ namespace MornNovel
 {
     public class MornNovelSceneAddState : StateBehaviour
     {
-        [SerializeField, Label("null可")] private MornNovelAddress _novelAddress;
+        [SerializeField] private MornNovelAddress _novelAddress;
         [SerializeField] private StateLink _onNovelEnd;
         [Inject] private MornNovelService _novelManager;
 
