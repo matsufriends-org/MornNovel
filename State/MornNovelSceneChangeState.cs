@@ -14,7 +14,7 @@ namespace MornNovel
         {
             if (!_novelAddress.IsNullOrEmpty())
             {
-                _novelManager.SetNovelAddress(_novelAddress);
+                _novelManager.SetNovelAddress(_novelAddress, MornNovelSetType.RegisterAsReading);
             }
 
             SceneManager.LoadScene(MornNovelGlobal.I.NovelScene);

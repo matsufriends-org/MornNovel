@@ -31,6 +31,8 @@ namespace MornNovel
         private MornSceneObject _scene;
         [SerializeField, ShowIf(nameof(IsChangeNovel)), Label("遷移先のノベル")] 
         private MornNovelAddress _address;
+        [SerializeField, ShowIf(nameof(IsChangeNovel)), Label("読みかけ登録設定")] 
+        private MornNovelSetType _setType;
         [Inject] private MornTransitionCtrl _transitionCtrl;
         [Inject] private MornBeatControllerMono _beatController;
         [Inject] private MornNovelSettings _settings;
@@ -48,7 +50,12 @@ namespace MornNovel
             {
                 _novelManager.AtNovelEnd(_novelManager.CurrentNovelAddress);
             }
-            
+
+            if (IsChangeNovel)
+            {
+                _novelManager.SetNovelAddress(_address, _setType);
+            }
+
             var controller = FindFirstObjectByType<MornNovelControllerMono>();
             var taskList = new List<UniTask>();
             var ct = CancellationTokenOnEnd;
@@ -84,7 +91,7 @@ namespace MornNovel
 
             if (IsChangeNovel)
             {
-                _novelManager.SetNovelAddress(_address);
+                _novelManager.SetNovelAddress(_address, _setType);
                 SceneManager.LoadScene(MornNovelGlobal.I.NovelScene);
             }
 

@@ -8,11 +8,14 @@ namespace MornNovel
         private readonly Func<MornNovelAddress, bool> _isNovelRead;
         private readonly Func<bool> _getInput;
         public bool Debug;
-        private readonly Subject<(bool, MornNovelAddress)> _onNovelStart = new();
+        private readonly Subject<MornNovelAddress> _onNovelStart = new();
+        private readonly Subject<MornNovelAddress> _onNovelSet = new();
         private readonly Subject<MornNovelAddress> _onNovelEnd = new();
-        public IObservable<(bool, MornNovelAddress)> OnNovelStart => _onNovelStart;
+        public IObservable<MornNovelAddress> OnNovelStart => _onNovelStart;
+        public IObservable<MornNovelAddress> OnNovelSet => _onNovelSet;
         public IObservable<MornNovelAddress> OnNovelEnd => _onNovelEnd;
         public MornNovelAddress CurrentNovelAddress { get; private set; }
+        public MornNovelSetType NovelSetType { get; private set; }
         public MornNovelMono CurrentNovelPrefab { get; private set; }
 
         public MornNovelService(Func<MornNovelAddress, bool> novelRead, Func<bool> getInput)
@@ -21,9 +24,9 @@ namespace MornNovel
             _getInput = getInput;
         }
 
-        public void AtNovelStart(bool isUpperNovel, MornNovelAddress address)
+        public void AtNovelStart(MornNovelAddress address)
         {
-            _onNovelStart.OnNext((isUpperNovel, address));
+            _onNovelStart.OnNext(address);
         }
 
         public void AtNovelEnd(MornNovelAddress address)
@@ -46,9 +49,10 @@ namespace MornNovel
             CurrentNovelPrefab = prefab;
         }
 
-        public void SetNovelAddress(MornNovelAddress novelAddress)
+        public void SetNovelAddress(MornNovelAddress novelAddress, MornNovelSetType novelSetType)
         {
             CurrentNovelAddress = novelAddress;
+            NovelSetType = novelSetType;
         }
     }
 }

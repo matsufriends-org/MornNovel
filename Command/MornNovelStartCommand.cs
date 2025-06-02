@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Arbor;
 using Cysharp.Threading.Tasks;
 using MornBeat;
@@ -24,14 +25,13 @@ namespace MornNovel
 
         public override async void OnStateBegin()
         {
-            // 自分以外のシーンが存在したら上乗せノベル判定
-            var isUpperNovel = SceneManager.sceneCount > 1;
-            
             if (!_novelService.CurrentNovelAddress.IsNullOrEmpty())
             {
-                _novelService.AtNovelStart(isUpperNovel, _novelService.CurrentNovelAddress);
+                _novelService.AtNovelStart(_novelService.CurrentNovelAddress);
             }
-            
+
+            // 自分以外のシーンが存在したら上乗せノベル判定
+            var isUpperNovel = SceneManager.sceneCount > 1;
             if (isUpperNovel)
             {
                 Transition(_nextState);
