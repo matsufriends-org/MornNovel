@@ -17,7 +17,8 @@ namespace MornNovel
 
         public override async void OnStateBegin()
         {
-            var ct = CancellationTokenOnEnd;
+            // Stateに紐づかず、独立で稼働
+            var ct = destroyCancellationToken;
             if (_beatMemo != null)
             {
                 await _beatController.StartAsync(

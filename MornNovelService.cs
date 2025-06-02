@@ -53,6 +53,7 @@ namespace MornNovel
         {
             CurrentNovelAddress = novelAddress;
             NovelSetType = novelSetType;
+            _onNovelSet.OnNext(novelAddress);
         }
     }
 }
