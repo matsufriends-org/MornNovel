@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using MornEditor;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEngine;
@@ -8,6 +10,32 @@ namespace MornNovel
 {
     internal sealed class MornNovelAddressWindow : EditorWindow
     {
+        private class Address
+        {
+            public string Key { get; set; }
+        }
+
+        private sealed class SceneAssetTree : MornEditorTreeBase<Address>
+        {
+            private Action<Address> _callback;
+
+            public SceneAssetTree(Action<Address> callback, string originalPath) : base(originalPath)
+            {
+                _callback = callback;
+            }
+
+            protected override string NodeToPath(Address node)
+            {
+                return node.Key;
+            }
+
+            protected override void NodeClicked(Address node)
+            {
+                _callback?.Invoke(node);
+            }
+        }
+
+        private SceneAssetTree _sceneAssetTree;
         private SerializedProperty _addressProperty;
         private List<string> _allAddress = new();
         private List<string> _filteredAddress = new();
@@ -24,6 +52,14 @@ namespace MornNovel
 
         private void Initialize(SerializedProperty property)
         {
+            _sceneAssetTree = new SceneAssetTree(
+                address =>
+                {
+                    _addressProperty.stringValue = address.Key;
+                    _addressProperty.serializedObject.ApplyModifiedProperties();
+                    Close();
+                },
+                "Novel/");
             _addressProperty = property;
             _allAddress.Clear();
             _filteredAddress.Clear();
@@ -44,11 +80,20 @@ namespace MornNovel
                     continue;
                 }
 
+                if (!entry.address.StartsWith("Novel/"))
+                {
+                    continue;
+                }
+
                 _allAddress.Add(entry.address);
             }
 
             _allAddress = _allAddress.OrderBy(obj => obj.Split('/').Length).ToList();
-            _filteredAddress.AddRange(_allAddress);
+            foreach (var address in _allAddress)
+            {
+                _filteredAddress.Add(address);
+                _sceneAssetTree.Add(new Address { Key = address });
+            }
         }
 
         private void OnGUI()
@@ -58,10 +103,24 @@ namespace MornNovel
             if (cachedText != _searchText)
             {
                 _filteredAddress.Clear();
-                _filteredAddress.AddRange(_allAddress.Where(obj => obj.Contains(_searchText)));
+                _sceneAssetTree.Clear();
+                foreach (var address in _allAddress.Where(obj => obj.Contains(_searchText)))
+                {
+                    _filteredAddress.Add(address);
+                    _sceneAssetTree.Add(new Address { Key = address });
+                }
             }
 
             using var scroll = new EditorGUILayout.ScrollViewScope(_scrollPos);
+            if (GUILayout.Button("Null"))
+            {
+                _addressProperty.stringValue = string.Empty;
+                _addressProperty.serializedObject.ApplyModifiedProperties();
+                Close();
+            }
+            
+            _sceneAssetTree.OnGUI();
+            /*
             _headerHashSet.Clear();
             foreach (var address in _filteredAddress)
             {
@@ -104,6 +163,7 @@ namespace MornNovel
                     GUI.backgroundColor = cachedBackgroundColor;
                 }
             }
+            */
 
             _scrollPos = scroll.scrollPosition;
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
