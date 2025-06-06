@@ -359,7 +359,7 @@ MonoBehaviour:
   _backgroundA: {fileID: 8934719865482877890}
   _backgroundB: {fileID: 1483895767304247575}
   _charaParent: {fileID: 8715732983094042284}
-  _charaPrefab: {fileID: 50348768512927155, guid: bde3ecb4d5c2aec4c87dae7e6a539f0b, type: 3}
+  _charaPrefab: {fileID: 50348768512927155, guid: 96b8fe923cedc4503ac763fd429f609a, type: 3}
 --- !u!82 &4464586971135748451
 AudioSource:
   m_ObjectHideFlags: 0
@@ -703,9 +703,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.00019904459
+    y: 0
     width: 1
-    height: 0.9996019
+    height: 1
   near clip plane: 0.1
   far clip plane: 5000
   field of view: 35
@@ -783,6 +783,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetCamera: {fileID: 4051512141256571889}
+  _scale: 1
 --- !u!1 &4939909415054207751
 GameObject:
   m_ObjectHideFlags: 0

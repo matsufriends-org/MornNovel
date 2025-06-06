@@ -59,7 +59,7 @@ namespace MornNovel
                     _addressProperty.serializedObject.ApplyModifiedProperties();
                     Close();
                 },
-                "Novel/");
+                "");
             _addressProperty = property;
             _allAddress.Clear();
             _filteredAddress.Clear();
@@ -79,8 +79,10 @@ namespace MornNovel
                 {
                     continue;
                 }
-
-                if (!entry.address.StartsWith("Novel/"))
+                
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                if (prefab == null || prefab.GetComponent<MornNovelMono>() == null)
                 {
                     continue;
                 }
