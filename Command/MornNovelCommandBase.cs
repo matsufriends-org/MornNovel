@@ -16,6 +16,12 @@ namespace MornNovel
     {
         public override void OnInspectorGUI()
         {
+            if (!MornNovelUtil.ShowDescription)
+            {
+                base.OnInspectorGUI();
+                return;
+            }
+            
             var commandBase = (MornNovelCommandBase)target;
             EditorGUILayout.HelpBox(commandBase.Tips, MessageType.Info);
             var topColor = commandBase.CommandColor;

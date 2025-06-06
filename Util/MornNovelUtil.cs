@@ -4,11 +4,40 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace MornNovel
 {
     public static class MornNovelUtil
     {
+#if UNITY_EDITOR
+
+        private static bool? _showDescription;
+        public static bool ShowDescription
+        {
+            get => _showDescription ??= EditorPrefs.GetBool($"{nameof(MornNovel)}_{nameof(ShowDescription)}", true);
+            set
+            {
+                _showDescription = value;
+                EditorPrefs.SetBool($"{nameof(MornNovel)}_{nameof(ShowDescription)}", value);
+            }
+        }
+
+        [MenuItem("Tools/MornNovel/説明欄を表示")]
+        private static void SetShowDescription()
+        {
+            ShowDescription = true;
+        }
+
+        [MenuItem("Tools/MornNovel/説明欄を非表示")]
+        private static void SetHideDescription()
+        {
+            ShowDescription = false;
+        }
+#endif
+
         public async static UniTask DOText(string context, Action<string> setText,
             Func<(AudioClip clip, float interval)> getMessageClip, Action<AudioClip> playSe,
             Action<bool> showWaitInputIcon, bool isWaitInput, Func<bool> submitFunc, CancellationToken ct = default)
