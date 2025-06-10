@@ -7,7 +7,7 @@ namespace MornNovel
     {
         private readonly Func<MornNovelAddress, bool> _isNovelRead;
         private readonly Func<bool> _getInput;
-        public bool Debug;
+        public bool IsDebug;
         private readonly Subject<MornNovelAddress> _onNovelStart = new();
         private readonly Subject<MornNovelAddress> _onNovelSet = new();
         private readonly Subject<MornNovelAddress> _onNovelEnd = new();

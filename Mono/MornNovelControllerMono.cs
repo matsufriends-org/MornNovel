@@ -22,7 +22,7 @@ namespace MornNovel
         [Inject] private MornNovelSettings _novelSettings;
         [Inject] private IObjectResolver _resolver;
         private bool _usingBackgroundA;
-        private CancellationTokenSource _cts;
+        private CancellationTokenSource _backgroundCts;
         private readonly Dictionary<MornNovelTalkerSo, MornNovelCharaMono> _cachedCharaDict = new();
         private Image Current => _usingBackgroundA ? _backgroundA : _backgroundB;
         private Image Next => _usingBackgroundA ? _backgroundB : _backgroundA;
@@ -50,18 +50,19 @@ namespace MornNovel
 
         public async UniTask SetBackgroundAsync(Sprite sprite, bool isImmediate, CancellationToken ct = default)
         {
-            _cts?.Cancel();
+            _backgroundCts?.Cancel();
             Next.color = new Color(1, 1, 1, 0);
             Next.sprite = sprite;
             Next.transform.SetAsLastSibling();
             if (isImmediate)
             {
-                _cts = null;
+                _backgroundCts = null;
                 Next.SetAlpha(1);
             }
             else
             {
-                await Next.DOFade(1, _novelSettings.BackgroundFadeSec, ct);
+                _backgroundCts = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
+                await Next.DOFade(1, _novelSettings.BackgroundFadeSec, _backgroundCts.Token);
             }
 
             _usingBackgroundA = !_usingBackgroundA;
@@ -70,7 +71,8 @@ namespace MornNovel
         public async UniTask SetBackgroundDistortTransitionAsync(Sprite prevSprite, Sprite nextSprite,
             CancellationToken ct = default)
         {
-            _cts?.Cancel();
+            _backgroundCts?.Cancel();
+            _backgroundCts = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             Next.color = new Color(1, 1, 1, 0);
             Next.sprite = nextSprite;
             Next.SetAlpha(1);
@@ -79,19 +81,19 @@ namespace MornNovel
             Next.material.SetTexture("PrevTex", prevSprite.texture);
             Next.material.SetTexture("_NextTex", nextSprite.texture);
             Next.material.SetFloat("_Phase", 0);
-            await Next.DoMaterialFloat("_Phase", 1, _novelSettings.DistortTransitionSec, ct);
+            await Next.DoMaterialFloat("_Phase", 1, _novelSettings.DistortTransitionSec, _backgroundCts.Token);
             Next.material = null;
             _usingBackgroundA = !_usingBackgroundA;
         }
 
         public async UniTask RemoveAllAsync(CancellationToken ct = default)
         {
-            _cts?.Cancel();
-            _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            _backgroundCts?.Cancel();
+            _backgroundCts = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             var fadeDurationA = _novelSettings.BackgroundFadeSec * _backgroundA.color.a;
             var fadeDurationB = _novelSettings.BackgroundFadeSec * _backgroundB.color.a;
-            var taskA = _backgroundA.DOFade(0, fadeDurationA, _cts.Token);
-            var taskB = _backgroundB.DOFade(0, fadeDurationB, _cts.Token);
+            var taskA = _backgroundA.DOFade(0, fadeDurationA, _backgroundCts.Token);
+            var taskB = _backgroundB.DOFade(0, fadeDurationB, _backgroundCts.Token);
             await UniTask.WhenAll(taskA, taskB);
         }
 

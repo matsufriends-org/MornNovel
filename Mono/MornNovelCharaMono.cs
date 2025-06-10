@@ -58,7 +58,7 @@ namespace MornNovel
         public async UniTask SetPositionXAsync(float talkerPosition, CancellationToken ct = default)
         {
             _ctsT?.Cancel();
-            _ctsT = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            _ctsT = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             var pos = transform.localPosition;
             pos.x = talkerPosition * _novelSettings.PositionScale;
             await transform.DOLocalMove(pos, _novelSettings.AnimDuration, _ctsT.Token);
@@ -86,9 +86,9 @@ namespace MornNovel
             CancellationToken ct = default)
         {
             _ctsX?.Cancel();
-            _ctsX = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            _ctsX = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             _ctsAlpha?.Cancel();
-            _ctsAlpha = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            _ctsAlpha = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             var localFromPos = _parentX.localPosition;
             var dif = _novelSettings.SpawnDifX;
             localFromPos.x = moveType switch
@@ -129,8 +129,8 @@ namespace MornNovel
             }
             else
             {
-                _ctsX = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                _ctsAlpha = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                _ctsX = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
+                _ctsAlpha = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
                 var taskA = _parentX.DOLocalMoveX(aimX, _novelSettings.AnimDuration, _ctsX.Token);
                 var taskB = _renderer.DOFade(0, _novelSettings.AnimDuration, _ctsAlpha.Token);
                 await UniTask.WhenAll(taskA, taskB);
@@ -140,7 +140,7 @@ namespace MornNovel
         public void Focus(CancellationToken ct = default)
         {
             _ctsY?.Cancel();
-            _ctsY = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            _ctsY = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             _parentY.DOLocalMoveY(_novelSettings.HeightFocus, _novelSettings.AnimDuration, _ctsY.Token).Forget();
         }
 
@@ -154,7 +154,7 @@ namespace MornNovel
             }
             else
             {
-                _ctsY = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                _ctsY = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
                 _parentY.DOLocalMoveY(_novelSettings.HeightUnfocus, _novelSettings.AnimDuration, _ctsY.Token).Forget();
             }
         }

@@ -1,4 +1,5 @@
-﻿using Arbor;
+﻿using System;
+using Arbor;
 using UnityEngine;
 
 namespace MornNovel
@@ -22,29 +23,35 @@ namespace MornNovel
 
         public override async void OnStateBegin()
         {
-            var controller = FindFirstObjectByType<MornNovelControllerMono>();
-            if (_pose.Talker.IsMulti)
+            try
             {
-                Debug.LogWarning("複数人Talkerのキャラ制御はできません");
-                return;
-            }
+                var controller = FindFirstObjectByType<MornNovelControllerMono>();
+                if (_pose.Talker.IsMulti)
+                {
+                    Debug.LogWarning("複数人Talkerのキャラ制御はできません");
+                    return;
+                }
 
-            var chara = controller.GetChara(_pose.Talker);
-            chara.SetFlipX(_isFlipX);
-            chara.SetPose(_pose);
-            controller.AllDecreaseOrderInLayer();
-            chara.ResetOrderInLayer();
-            if (_moveType == MornNovelCharaMoveType.Slide)
-            {
-                await chara.SetPositionXAsync(_talkerPosition);
-            }
-            else
-            {
-                chara.SetPositionX(_talkerPosition);
-                await chara.SpawnAsync(_moveType);
-            }
+                var chara = controller.GetChara(_pose.Talker);
+                chara.SetFlipX(_isFlipX);
+                chara.SetPose(_pose);
+                controller.AllDecreaseOrderInLayer();
+                chara.ResetOrderInLayer();
+                if (_moveType == MornNovelCharaMoveType.Slide)
+                {
+                    await chara.SetPositionXAsync(_talkerPosition);
+                }
+                else
+                {
+                    chara.SetPositionX(_talkerPosition);
+                    await chara.SpawnAsync(_moveType);
+                }
 
-            Transition(_stateLink);
+                Transition(_stateLink);
+            }
+            catch (OperationCanceledException)
+            {
+            }
         }
     }
 }

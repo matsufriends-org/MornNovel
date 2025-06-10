@@ -41,36 +41,42 @@ namespace MornNovel
 
         public override async void OnStateBegin()
         {
-            var ct = CancellationTokenOnEnd;
-            var controller = FindFirstObjectByType<MornNovelControllerMono>();
-            controller.SetBubble(_overrideBubble, _talker);
-            controller.SetWaitInputIcon(false);
-            controller.SetMessage("");
-            if (!_talker.IsMulti)
+            try
             {
-                controller.SetFocus(_talker);
-                controller.AllDecreaseOrderInLayer();
-                controller.GetChara(_talker)?.ResetOrderInLayer();
-            }
-            else
-            {
-                controller.AllFocus();
-            }
-
-            await MornNovelUtil.DOText(
-                GetText(),
-                controller.SetMessage,
-                () =>
+                var ct = CancellationTokenOnEnd;
+                var controller = FindFirstObjectByType<MornNovelControllerMono>();
+                controller.SetBubble(_overrideBubble, _talker);
+                controller.SetWaitInputIcon(false);
+                controller.SetMessage("");
+                if (!_talker.IsMulti)
                 {
-                    var clip = _talker.Clips[UnityEngine.Random.Range(0, _talker.Clips.Length)];
-                    return (clip, _talker.ClipLength);
-                },
-                _novelController.PlayOneShot,
-                controller.SetWaitInputIcon,
-                true,
-                () => _novelManager.Input(),
-                CancellationTokenOnEnd);
-            Transition(_stateLink);
+                    controller.SetFocus(_talker);
+                    controller.AllDecreaseOrderInLayer();
+                    controller.GetChara(_talker)?.ResetOrderInLayer();
+                }
+                else
+                {
+                    controller.AllFocus();
+                }
+
+                await MornNovelUtil.DOText(
+                    GetText(),
+                    controller.SetMessage,
+                    () =>
+                    {
+                        var clip = _talker.Clips[UnityEngine.Random.Range(0, _talker.Clips.Length)];
+                        return (clip, _talker.ClipLength);
+                    },
+                    _novelController.PlayOneShot,
+                    controller.SetWaitInputIcon,
+                    true,
+                    () => _novelManager.Input(),
+                    ct);
+                Transition(_stateLink);
+            }
+            catch (OperationCanceledException)
+            {
+            }
         }
 
         private async UniTask<bool> WaitSecondsReturnSkipped(float seconds, CancellationToken ct = default)

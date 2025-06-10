@@ -30,9 +30,8 @@ namespace MornNovel
                 _novelService.AtNovelStart(_novelService.CurrentNovelAddress);
             }
 
-            // 自分以外のシーンが存在したら上乗せノベル判定
-            var isUpperNovel = SceneManager.sceneCount > 1;
-            if (isUpperNovel)
+            // 上乗せノベル判定（デバッグ時は考慮しない）
+            if (MornNovelUtil.IsUpperNovel && !_novelService.IsDebug)
             {
                 Transition(_nextState);
                 return;

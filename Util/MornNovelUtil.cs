@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -37,6 +38,8 @@ namespace MornNovel
             ShowDescription = false;
         }
 #endif
+
+        public static bool IsUpperNovel => SceneManager.sceneCount > 1;
 
         public async static UniTask DOText(string context, Action<string> setText,
             Func<(AudioClip clip, float interval)> getMessageClip, Action<AudioClip> playSe,

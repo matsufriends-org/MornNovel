@@ -15,15 +15,21 @@ namespace MornNovel
 
         public override async void OnStateBegin()
         {
-            var controller = FindFirstObjectByType<MornNovelControllerMono>();
-            if (_talker.IsMulti)
+            try
             {
-                Debug.LogWarning("複数人Talkerのキャラ制御はできません");
-                return;
-            }
+                var controller = FindFirstObjectByType<MornNovelControllerMono>();
+                if (_talker.IsMulti)
+                {
+                    Debug.LogWarning("複数人Talkerのキャラ制御はできません");
+                    return;
+                }
 
-            await controller.GetChara(_talker).HideAsync(_moveType);
-            Transition(_nextState);
+                await controller.GetChara(_talker).HideAsync(_moveType);
+                Transition(_nextState);
+            }
+            catch (OperationCanceledException)
+            {
+            }
         }
     }
 }

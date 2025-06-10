@@ -41,7 +41,7 @@ namespace MornNovel
         {
             //Animation
             _cts?.Cancel();
-            _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             var duration = _novelSettings.AnimDuration * (1 - _canvasGroup.alpha);
             _canvasGroup.DOFade(1, duration, _cts.Token).Forget();
 
@@ -75,7 +75,7 @@ namespace MornNovel
             }
             else
             {
-                _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                _cts = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
                 
                 var duration = _novelSettings.AnimDuration * _canvasGroup.alpha;
                 await _canvasGroup.DOFade(0, duration, _cts.Token);

@@ -64,7 +64,7 @@ namespace MornNovel
                 taskList.Add(_beatController.StopBeatAsync(_settings.BgmChangeSec, ct));
             }
 
-            if (_novelManager.Debug) _endTransitionType = NovelEndTransitionType.ノベルシーンだけ消す;
+            if (_novelManager.IsDebug) _endTransitionType = NovelEndTransitionType.ノベルシーンだけ消す;
 
             if (IsNeedTransition)
             {
