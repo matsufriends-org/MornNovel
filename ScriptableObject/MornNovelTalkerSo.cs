@@ -1,4 +1,5 @@
 ﻿using MornColor;
+using MornEditor;
 using MornLocalize;
 using UnityEngine;
 
@@ -9,9 +10,9 @@ namespace MornNovel
     {
         [SerializeField] [Label("日本語")] private MornLocalizeString _localize;
         [SerializeField] [Label("複数人")] private bool _isMulti;
-        [SerializeField] [Label("文字色")] [MornColorInfo] private MornColorInfo _textColor;
-        [SerializeField] [Label("名前グラデーション")] [MornGradientInfo] private MornGradientInfo _nameGradient;
-        [SerializeField] [Label("吹き出しフチ色/文字送り色")] [MornColorInfo] private MornColorInfo _edgeColor;
+        [SerializeField] [Label("文字色")] private MornColorInfo _textColor;
+        [SerializeField] [Label("名前グラデーション")] private MornGradientInfo _nameGradient;
+        [SerializeField] [Label("吹き出しフチ色/文字送り色")] private MornColorInfo _edgeColor;
         [SerializeField] private AudioClip[] _clip;
         [SerializeField] private float _clipLength;
         public bool IsMulti => _isMulti;
