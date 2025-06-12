@@ -1,5 +1,8 @@
 ﻿using System;
+using MornDebug;
+using MornUtil;
 using UniRx;
+using UnityEngine;
 
 namespace MornNovel
 {
@@ -8,6 +11,7 @@ namespace MornNovel
         private readonly Func<MornNovelAddress, bool> _isNovelRead;
         private readonly Func<bool> _getInput;
         public bool IsDebug;
+        public bool IsAutoPlay { get; private set; }
         private readonly Subject<MornNovelAddress> _onNovelStart = new();
         private readonly Subject<MornNovelAddress> _onNovelSet = new();
         private readonly Subject<MornNovelAddress> _onNovelEnd = new();
@@ -22,6 +26,14 @@ namespace MornNovel
         {
             _isNovelRead = novelRead;
             _getInput = getInput;
+
+            MornDebugCore.RegisterGUI(
+                "チート/ノベル自動再生",
+                () =>
+                {
+                    IsAutoPlay = GUILayout.Toggle(IsAutoPlay, "ノベル自動再生");
+                },
+                MornApp.QuitToken);
         }
 
         public void AtNovelStart(MornNovelAddress address)

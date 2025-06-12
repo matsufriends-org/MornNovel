@@ -21,7 +21,7 @@ namespace MornNovel
         [Inject] private MornLocalizeCore _localizeCore;
         [Inject] private MornNovelControllerMono _novelController;
         [Inject] private MornNovelSettings _novelSettings;
-        [Inject] private MornNovelService _novelManager;
+        [Inject] private MornNovelService _novelService;
         public override Color? CommandColor => _talker == null ? null : _talker.CommandColor;
 
         public string GetText()
@@ -61,6 +61,7 @@ namespace MornNovel
                 }
 
                 await MornNovelUtil.DOText(
+                    _novelService,
                     GetText(),
                     controller.SetMessage,
                     () =>
@@ -71,7 +72,7 @@ namespace MornNovel
                     _novelController.PlayOneShot,
                     controller.SetWaitInputIcon,
                     true,
-                    () => _novelManager.Input(),
+                    () => _novelService.Input(),
                     ct);
                 Transition(_stateLink);
             }
@@ -86,7 +87,7 @@ namespace MornNovel
             while (elapsedTime < seconds)
             {
                 elapsedTime += Time.deltaTime;
-                if (_novelManager.Input())
+                if (_novelService.Input())
                 {
                     // 次Fへ入力を渡さないために1F待機
                     await UniTask.Yield(ct);

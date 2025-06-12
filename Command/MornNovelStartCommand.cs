@@ -5,6 +5,7 @@ using MornBeat;
 using MornEditor;
 using MornSound;
 using MornTransition;
+using MornUtil;
 using UnityEngine;
 using VContainer;
 
@@ -37,7 +38,7 @@ namespace MornNovel
             }
 
             var list = new List<UniTask>();
-            var ct = CancellationTokenOnEnd;
+            var ct = MornApp.QuitToken;
             if (_beatMemo != null)
             {
                 list.Add(

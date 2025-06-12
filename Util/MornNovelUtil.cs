@@ -41,7 +41,7 @@ namespace MornNovel
 
         public static bool IsUpperNovel => SceneManager.sceneCount > 1;
 
-        public async static UniTask DOText(string context, Action<string> setText,
+        public async static UniTask DOText(MornNovelService service, string context, Action<string> setText,
             Func<(AudioClip clip, float interval)> getMessageClip, Action<AudioClip> playSe,
             Action<bool> showWaitInputIcon, bool isWaitInput, Func<bool> submitFunc, CancellationToken ct = default)
         {
@@ -74,7 +74,7 @@ namespace MornNovel
             if (isWaitInput)
             {
                 showWaitInputIcon(true);
-                while (!submitFunc())
+                while (!submitFunc() && !service.IsAutoPlay)
                 {
                     await UniTask.Yield(ct);
                 }
