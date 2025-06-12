@@ -22,6 +22,7 @@ namespace MornNovel
         }
 
         public override string Tips => "ノベルを終了する";
+        [SerializeField, Label("既読フラグをつける")] private bool _checkNovelRead = true;
         [SerializeField, Label("BGMを止めるか")]
         private bool _isStopBgm = true;
         [SerializeField, Label("終了時の処理")]
@@ -47,9 +48,9 @@ namespace MornNovel
 
         public override async void OnStateBegin()
         {
-            if (!_novelManager.CurrentNovelAddress.IsNullOrEmpty())
+            if (_checkNovelRead && !_novelManager.CurrentNovelAddress.IsNullOrEmpty())
             {
-                _novelManager.AtNovelEnd(_novelManager.CurrentNovelAddress);
+                _novelManager.AtNovelReadEnd(_novelManager.CurrentNovelAddress);
             }
 
             if (IsChangeNovel)

@@ -29,7 +29,7 @@ namespace MornNovel
             _onNovelStart.OnNext(address);
         }
 
-        public void AtNovelEnd(MornNovelAddress address)
+        public void AtNovelReadEnd(MornNovelAddress address)
         {
             _onNovelEnd.OnNext(address);
         }
