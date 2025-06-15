@@ -32,7 +32,7 @@ namespace MornNovel
                 json += "{";
                 foreach (var pair in dic)
                 {
-                    json += $"\"{pair.Key}\":\"{pair.Value.Replace("\n", "\\n")}\",";
+                    json += $"\"{pair.Key}\":\"{EscapeJsonString(pair.Value)}\",";
                 }
                 json = json.TrimEnd(',');
                 json += "},";
@@ -40,6 +40,19 @@ namespace MornNovel
             json = json.TrimEnd(',');
             json += "]}";
             return json;
+        }
+        
+        private static string EscapeJsonString(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return value;
+            
+            return value
+                .Replace("\\", "\\\\")  // バックスラッシュのエスケープ
+                .Replace("\"", "\\\"")  // ダブルクォーテーションのエスケープ
+                .Replace("\n", "\\n")   // 改行のエスケープ
+                .Replace("\r", "\\r")   // キャリッジリターンのエスケープ
+                .Replace("\t", "\\t");  // タブのエスケープ
         }
     }
 }
