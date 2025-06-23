@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 #if UNITY_EDITOR
@@ -14,7 +17,6 @@ namespace MornNovel
     public static class MornNovelUtil
     {
 #if UNITY_EDITOR
-
         private static bool? _showDescription;
         public static bool ShowDescription
         {
@@ -38,6 +40,15 @@ namespace MornNovel
             ShowDescription = false;
         }
 #endif
+
+        /// <summary>Addressableに登録されている全てのNovelアドレスを取得する（エディタ専用）</summary>
+        public async static UniTask<List<string>> GetAllNovelAddressesAsync()
+        {
+            var label = MornNovelGlobal.I.AddressLabelTag;
+            var locations = await Addressables.LoadResourceLocationsAsync(label, typeof(GameObject));
+            return locations.Select(location => location.PrimaryKey).OrderBy(address => address.Split('/').Length)
+                            .ThenBy(address => address).ToList();
+        }
 
         public static bool IsUpperNovel => SceneManager.sceneCount > 1;
 
