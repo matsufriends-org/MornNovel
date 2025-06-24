@@ -38,7 +38,7 @@ namespace MornNovel.Editor
 
             if (GUILayout.Button("ローカライズシートを更新"))
             {
-                MornLocalizeGlobal.LoadMasterDataAsync().Forget();
+                MornLocalizeGlobal.UpdateMasterDataAsync().Forget();
             }
         }
 

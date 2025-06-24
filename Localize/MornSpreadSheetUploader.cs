@@ -31,7 +31,7 @@ namespace MornNovel
                 Debug.Log("Failed");
             }
             
-            MornLocalizeGlobal.LoadMasterDataAsync().Forget();
+            MornLocalizeGlobal.UpdateMasterDataAsync().Forget();
         }
     }
 }
