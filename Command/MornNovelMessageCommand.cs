@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Threading;
 using Arbor;
 using Cysharp.Threading.Tasks;
@@ -73,6 +72,7 @@ namespace MornNovel
                     controller.SetWaitInputIcon,
                     true,
                     () => _novelService.Input(),
+                    controller.MessageText,
                     ct);
                 Transition(_stateLink);
             }

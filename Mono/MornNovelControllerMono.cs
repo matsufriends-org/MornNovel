@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
@@ -26,6 +27,7 @@ namespace MornNovel
         private readonly Dictionary<MornNovelTalkerSo, MornNovelCharaMono> _cachedCharaDict = new();
         private Image Current => _usingBackgroundA ? _backgroundA : _backgroundB;
         private Image Next => _usingBackgroundA ? _backgroundB : _backgroundA;
+        public TMP_Text MessageText => _bubble.MessageText;
 
         private MornNovelCharaMono InstantiateImpl()
         {

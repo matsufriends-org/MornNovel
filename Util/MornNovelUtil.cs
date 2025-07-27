@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -51,11 +52,29 @@ namespace MornNovel
         }
 
         public static bool IsUpperNovel => SceneManager.sceneCount > 1;
-
-        public async static UniTask DOText(MornNovelService service, string context, Action<string> setText,
-            Func<(AudioClip clip, float interval)> getMessageClip, Action<AudioClip> playSe,
-            Action<bool> showWaitInputIcon, bool isWaitInput, Func<bool> submitFunc, CancellationToken ct = default)
+        
+        public async static UniTask DOText(
+            MornNovelService service, 
+            string context, 
+            Action<string> setText,
+            Func<(AudioClip clip, float interval)> getMessageClip, 
+            Action<AudioClip> playSe,
+            Action<bool> showWaitInputIcon, 
+            bool isWaitInput, 
+            Func<bool> submitFunc, 
+            TMP_Text autoSizeText = null,
+            CancellationToken ct = default)
         {
+            var prefix = "";
+            if (autoSizeText != null)
+            {
+                autoSizeText.text = context;
+                autoSizeText.ForceMeshUpdate();
+                prefix = $"<size={autoSizeText.fontSize}>";
+                autoSizeText.text = "";
+                autoSizeText.ForceMeshUpdate();
+            }
+            
             setText("");
             await UniTask.Delay(TimeSpan.FromSeconds(MornNovelGlobal.I.MessageOffset), cancellationToken: ct);
             var sb = new StringBuilder();
@@ -63,7 +82,7 @@ namespace MornNovel
             foreach (var c in context)
             {
                 sb.Append(c);
-                setText(sb.ToString());
+                setText(prefix + sb);
                 if (Time.time >= nextSeTime)
                 {
                     var (clip, interval) = getMessageClip();
@@ -81,7 +100,7 @@ namespace MornNovel
                 }
             }
 
-            setText(context);
+            setText(prefix + context);
             if (isWaitInput)
             {
                 showWaitInputIcon(true);

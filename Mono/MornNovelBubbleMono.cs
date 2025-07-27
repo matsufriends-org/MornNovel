@@ -25,6 +25,7 @@ namespace MornNovel
         [SerializeField] private Image _waitInputIcon;
         [Inject] private MornNovelSettings _novelSettings;
         [Inject] private MornLocalizeCore _localizeCore;
+        public TMP_Text MessageText => _messageText;
         private Material _nameBackMaterial;
         private Material _nameMaterial;
         private CancellationTokenSource _cts;
