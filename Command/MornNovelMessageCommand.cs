@@ -65,6 +65,11 @@ namespace MornNovel
                     controller.SetMessage,
                     () =>
                     {
+                        if (_talker.Clips == null || _talker.Clips.Length == 0)
+                        {
+                            return (null, 0f);
+                        }
+                        
                         var clip = _talker.Clips[UnityEngine.Random.Range(0, _talker.Clips.Length)];
                         return (clip, _talker.ClipLength);
                     },
