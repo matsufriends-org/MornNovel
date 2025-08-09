@@ -68,9 +68,10 @@ namespace MornNovel
 
             if (_novelManager.IsDebug) _endTransitionType = NovelEndTransitionType.ノベルシーンだけ消す;
 
-            if (IsNeedTransition)
+            if (IsNeedTransition || _novelManager.IsDebug)
             {
-                taskList.Add(_transitionCtrl.FillAsync(_transitionType, ct));
+                var transition = _novelManager.IsDebug ? MornNovelGlobal.I.DebugTransition : _transitionType;
+                taskList.Add(_transitionCtrl.FillAsync(transition, ct));
                 taskList.Add(_volume.FadeAsync(new MornSoundVolumeFadeInfo
                 {
                     SoundVolumeType = _settings.FadeVolumeType,
@@ -80,7 +81,7 @@ namespace MornNovel
                 }));
             }
 
-            if (IsCloseScene)
+            if (IsCloseScene && !_novelManager.IsDebug)
             {
                 taskList.Add(controller.RemoveAllAsync(ct));
             }
