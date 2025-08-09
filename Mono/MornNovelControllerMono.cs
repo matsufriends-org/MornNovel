@@ -22,6 +22,7 @@ namespace MornNovel
         public AudioMixerGroup AudioMixerGroup => _novelAudioSource.outputAudioMixerGroup;
         [Inject] private MornNovelSettings _novelSettings;
         [Inject] private IObjectResolver _resolver;
+        [Inject] private MornNovelService _novelService;
         private bool _usingBackgroundA;
         private CancellationTokenSource _backgroundCts;
         private readonly Dictionary<MornNovelTalkerSo, MornNovelCharaMono> _cachedCharaDict = new();
@@ -55,6 +56,7 @@ namespace MornNovel
             _backgroundCts?.Cancel();
             Next.color = new Color(1, 1, 1, 0);
             Next.sprite = sprite;
+            _novelService.OnShowBackground(sprite);
             Next.transform.SetAsLastSibling();
             if (isImmediate)
             {
@@ -77,6 +79,7 @@ namespace MornNovel
             _backgroundCts = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             Next.color = new Color(1, 1, 1, 0);
             Next.sprite = nextSprite;
+            _novelService.OnShowBackground(nextSprite);
             Next.SetAlpha(1);
             Next.transform.SetAsLastSibling();
             Next.material = _novelSettings.DistortTransitionMaterial;
