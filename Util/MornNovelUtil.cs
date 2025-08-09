@@ -53,15 +53,20 @@ namespace MornNovel
 
         public static bool IsUpperNovel => SceneManager.sceneCount > 1;
         
-        public async static UniTask DOText(
-            MornNovelService service, 
+        public async static UniTask DOTextAsync(
             string context, 
             Action<string> setText,
             Func<(AudioClip clip, float interval)> getMessageClip, 
+            Func<AudioClip> getSubmitClip, 
             Action<AudioClip> playSe,
             Action<bool> showWaitInputIcon, 
             bool isWaitInput, 
             Func<bool> submitFunc, 
+            Func<bool> isAutoPlayFunc, 
+            float startOffset = 0.1f,
+            float endOffset = 0.1f,
+            float charInterval = 0.05f,
+            float charReturnInterval = 0.1f,
             TMP_Text autoSizeText = null,
             CancellationToken ct = default)
         {
@@ -76,7 +81,7 @@ namespace MornNovel
             }
             
             setText("");
-            await UniTask.Delay(TimeSpan.FromSeconds(MornNovelGlobal.I.MessageOffset), cancellationToken: ct);
+            await UniTask.Delay(TimeSpan.FromSeconds(startOffset), cancellationToken: ct);
             var sb = new StringBuilder();
             var nextSeTime = 0f;
             foreach (var c in context)
@@ -93,7 +98,7 @@ namespace MornNovel
                     }
                 }
 
-                var waitInterval = c == '\n' ? MornNovelGlobal.I.CharReturnInterval : MornNovelGlobal.I.CharInterval;
+                var waitInterval = c == '\n' ? charReturnInterval : charInterval;
                 if (await WaitSecondsReturnSkipped(waitInterval, submitFunc, ct))
                 {
                     break;
@@ -104,18 +109,18 @@ namespace MornNovel
             if (isWaitInput)
             {
                 showWaitInputIcon(true);
-                while (!submitFunc() && !service.IsAutoPlay)
+                while (!submitFunc() && !isAutoPlayFunc())
                 {
                     await UniTask.Yield(ct);
                 }
 
-                playSe(MornNovelGlobal.I.SubmitClip);
+                playSe(getSubmitClip());
                 // 次Fへ入力を渡さないために1F待機
                 await UniTask.Yield(ct);
                 showWaitInputIcon(false);
             }
 
-            await UniTask.Delay(TimeSpan.FromSeconds(MornNovelGlobal.I.MessageOffset), cancellationToken: ct);
+            await UniTask.Delay(TimeSpan.FromSeconds(endOffset), cancellationToken: ct);
         }
 
         private async static UniTask<bool> WaitSecondsReturnSkipped(float seconds, Func<bool> submitFunc,

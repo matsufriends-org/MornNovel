@@ -59,8 +59,7 @@ namespace MornNovel
                     controller.AllFocus();
                 }
 
-                await MornNovelUtil.DOText(
-                    _novelService,
+                await MornNovelUtil.DOTextAsync(
                     GetText(),
                     controller.SetMessage,
                     () =>
@@ -69,16 +68,18 @@ namespace MornNovel
                         {
                             return (null, 0f);
                         }
-                        
+
                         var clip = _talker.Clips[UnityEngine.Random.Range(0, _talker.Clips.Length)];
                         return (clip, _talker.ClipLength);
                     },
+                    () => MornNovelGlobal.I.SubmitClip,
                     _novelController.PlayOneShot,
                     controller.SetWaitInputIcon,
                     true,
                     () => _novelService.Input(),
-                    controller.MessageText,
-                    ct);
+                    () => _novelService.IsAutoPlay,
+                    autoSizeText: controller.MessageText,
+                    ct: ct);
                 Transition(_stateLink);
             }
             catch (OperationCanceledException)
