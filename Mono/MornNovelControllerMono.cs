@@ -12,7 +12,9 @@ namespace MornNovel
 {
     public sealed class MornNovelControllerMono : MonoBehaviour
     {
-        
+        private static readonly int _prevTex = Shader.PropertyToID("_PrevTex");
+        private static readonly int _nextTex = Shader.PropertyToID("_NextTex");
+        private static readonly int _phase = Shader.PropertyToID("_Phase");
         [SerializeField] private AudioSource _novelAudioSource;
         [SerializeField] private MornNovelBubbleMono _bubble;
         [SerializeField] private Image _backgroundA;
@@ -83,9 +85,9 @@ namespace MornNovel
             Next.SetAlpha(1);
             Next.transform.SetAsLastSibling();
             Next.material = _novelSettings.DistortTransitionMaterial;
-            Next.material.SetTexture("PrevTex", prevSprite.texture);
-            Next.material.SetTexture("_NextTex", nextSprite.texture);
-            Next.material.SetFloat("_Phase", 0);
+            Next.material.SetTexture(_prevTex, prevSprite.texture);
+            Next.material.SetTexture(_nextTex, nextSprite.texture);
+            Next.material.SetFloat(_phase, 0);
             await Next.DoMaterialFloat("_Phase", 1, _novelSettings.DistortTransitionSec, _backgroundCts.Token);
             Next.material = null;
             _usingBackgroundA = !_usingBackgroundA;
