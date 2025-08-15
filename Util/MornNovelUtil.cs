@@ -67,6 +67,7 @@ namespace MornNovel
             float endOffset = 0.1f,
             float charInterval = 0.05f,
             float charReturnInterval = 0.1f,
+            bool waitAtMark = true,
             TMP_Text autoSizeText = null,
             CancellationToken ct = default)
         {
@@ -86,27 +87,47 @@ namespace MornNovel
             var nextSeTime = 0f;
             foreach (var c in context)
             {
-                sb.Append(c);
-                setText(prefix + sb);
-                if (Time.time >= nextSeTime)
+                if (c == '@' && waitAtMark)
                 {
-                    var (clip, interval) = getMessageClip();
-                    if (clip != null)
-                    {
-                        playSe(clip);
-                        nextSeTime = Time.time + interval;
-                    }
+                    await WaitSubmit();
                 }
-
-                var waitInterval = c == '\n' ? charReturnInterval : charInterval;
-                if (await WaitSecondsReturnSkipped(waitInterval, submitFunc, ct))
+                else
                 {
-                    break;
+                    sb.Append(c);
+                    setText(prefix + sb);
+                    if (Time.time >= nextSeTime)
+                    {
+                        var (clip, interval) = getMessageClip();
+                        if (clip != null)
+                        {
+                            playSe(clip);
+                            nextSeTime = Time.time + interval;
+                        }
+                    }
+                    
+                    var waitInterval = c == '\n' ? charReturnInterval : charInterval;
+                    if (await WaitSecondsReturnSkipped(waitInterval, submitFunc, ct))
+                    {
+                        break;
+                    }
                 }
             }
 
+            if (waitAtMark)
+            {
+                context = context.Replace("@", "");
+            }
+            
             setText(prefix + context);
             if (isWaitInput)
+            {
+                await WaitSubmit();
+            }
+
+            await UniTask.Delay(TimeSpan.FromSeconds(endOffset), cancellationToken: ct);
+            return;
+
+            async UniTask WaitSubmit()
             {
                 showWaitInputIcon(true);
                 while (!submitFunc() && !isAutoPlayFunc())
@@ -119,8 +140,6 @@ namespace MornNovel
                 await UniTask.Yield(ct);
                 showWaitInputIcon(false);
             }
-
-            await UniTask.Delay(TimeSpan.FromSeconds(endOffset), cancellationToken: ct);
         }
 
         private async static UniTask<bool> WaitSecondsReturnSkipped(float seconds, Func<bool> submitFunc,
