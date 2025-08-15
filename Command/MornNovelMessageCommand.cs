@@ -60,6 +60,7 @@ namespace MornNovel
                 }
 
                 await MornNovelUtil.DOTextAsync(
+                    _novelService,
                     GetText(),
                     controller.SetMessage,
                     () =>
@@ -72,12 +73,10 @@ namespace MornNovel
                         var clip = _talker.Clips[UnityEngine.Random.Range(0, _talker.Clips.Length)];
                         return (clip, _talker.ClipLength);
                     },
-                    () => MornNovelGlobal.I.SubmitClip,
                     _novelController.PlayOneShot,
                     controller.SetWaitInputIcon,
                     true,
                     () => _novelService.Input(),
-                    () => _novelService.IsAutoPlay,
                     autoSizeText: controller.MessageText,
                     ct: ct);
                 Transition(_stateLink);

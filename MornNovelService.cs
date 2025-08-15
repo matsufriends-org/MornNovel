@@ -10,6 +10,7 @@ namespace MornNovel
     {
         private readonly Func<MornNovelAddress, bool> _isNovelRead;
         private readonly Func<bool> _getInput;
+        private readonly Action<Sprite> _backgroundShown;
         public bool IsDebug;
         public bool IsAutoPlay { get; private set; }
         private readonly Subject<MornNovelAddress> _onNovelStart = new();
@@ -22,10 +23,14 @@ namespace MornNovel
         public MornNovelSetType NovelSetType { get; private set; }
         public MornNovelMono CurrentNovelPrefab { get; private set; }
 
-        public MornNovelService(Func<MornNovelAddress, bool> novelRead, Func<bool> getInput)
+        public MornNovelService(
+            Func<MornNovelAddress, bool> novelRead, 
+            Func<bool> getInput,
+            Action<Sprite> backgroundShown)
         {
             _isNovelRead = novelRead;
             _getInput = getInput;
+            _backgroundShown = backgroundShown;
 
             MornDebugCore.RegisterGUI(
                 "チート/ノベル自動再生",
@@ -66,6 +71,11 @@ namespace MornNovel
             CurrentNovelAddress = novelAddress;
             NovelSetType = novelSetType;
             _onNovelSet.OnNext(novelAddress);
+        }
+        
+        public void OnShowBackground(Sprite sprite)
+        {
+            _backgroundShown?.Invoke(sprite);
         }
     }
 }

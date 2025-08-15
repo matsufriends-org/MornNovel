@@ -12,7 +12,9 @@ namespace MornNovel
 {
     public sealed class MornNovelControllerMono : MonoBehaviour
     {
-        
+        private static readonly int _prevTex = Shader.PropertyToID("_PrevTex");
+        private static readonly int _nextTex = Shader.PropertyToID("_NextTex");
+        private static readonly int _phase = Shader.PropertyToID("_Phase");
         [SerializeField] private AudioSource _novelAudioSource;
         [SerializeField] private MornNovelBubbleMono _bubble;
         [SerializeField] private Image _backgroundA;
@@ -22,6 +24,7 @@ namespace MornNovel
         public AudioMixerGroup AudioMixerGroup => _novelAudioSource.outputAudioMixerGroup;
         [Inject] private MornNovelSettings _novelSettings;
         [Inject] private IObjectResolver _resolver;
+        [Inject] private MornNovelService _novelService;
         private bool _usingBackgroundA;
         private CancellationTokenSource _backgroundCts;
         private readonly Dictionary<MornNovelTalkerSo, MornNovelCharaMono> _cachedCharaDict = new();
@@ -55,6 +58,7 @@ namespace MornNovel
             _backgroundCts?.Cancel();
             Next.color = new Color(1, 1, 1, 0);
             Next.sprite = sprite;
+            _novelService.OnShowBackground(sprite);
             Next.transform.SetAsLastSibling();
             if (isImmediate)
             {
@@ -77,12 +81,13 @@ namespace MornNovel
             _backgroundCts = CancellationTokenSource.CreateLinkedTokenSource(ct, destroyCancellationToken);
             Next.color = new Color(1, 1, 1, 0);
             Next.sprite = nextSprite;
+            _novelService.OnShowBackground(nextSprite);
             Next.SetAlpha(1);
             Next.transform.SetAsLastSibling();
             Next.material = _novelSettings.DistortTransitionMaterial;
-            Next.material.SetTexture("PrevTex", prevSprite.texture);
-            Next.material.SetTexture("_NextTex", nextSprite.texture);
-            Next.material.SetFloat("_Phase", 0);
+            Next.material.SetTexture(_prevTex, prevSprite.texture);
+            Next.material.SetTexture(_nextTex, nextSprite.texture);
+            Next.material.SetFloat(_phase, 0);
             await Next.DoMaterialFloat("_Phase", 1, _novelSettings.DistortTransitionSec, _backgroundCts.Token);
             Next.material = null;
             _usingBackgroundA = !_usingBackgroundA;
