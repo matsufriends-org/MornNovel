@@ -52,52 +52,12 @@ namespace MornNovel
         }
 
         public static bool IsUpperNovel => SceneManager.sceneCount > 1;
-        
-        public async static UniTask DOTextAsync(
-            MornNovelService service,
-            string context, 
-            Action<string> setText,
-            Func<(AudioClip clip, float interval)> getMessageClip, 
-            Action<AudioClip> playSe,
-            Action<bool> showWaitInputIcon, 
-            bool isWaitInput, 
-            Func<bool> submitFunc, TMP_Text autoSizeText = null, CancellationToken ct = default)
-        {
-            await DOTextAsync(
-                context,
-                setText,
-                getMessageClip,
-                () => MornNovelGlobal.I.SubmitClip,
-                playSe,
-                showWaitInputIcon,
-                isWaitInput,
-                submitFunc,
-                () => service.IsAutoPlay,
-                MornNovelGlobal.I.MessageOffset,
-                MornNovelGlobal.I.MessageOffset,
-                MornNovelGlobal.I.CharInterval,
-                MornNovelGlobal.I.CharReturnInterval,
-                autoSizeText,
-                ct);
-        }
-        
-        public async static UniTask DOTextAsync(
-            string context, 
-            Action<string> setText,
-            Func<(AudioClip clip, float interval)> getMessageClip, 
-            Func<AudioClip> getSubmitClip, 
-            Action<AudioClip> playSe,
-            Action<bool> showWaitInputIcon, 
-            bool isWaitInput, 
-            Func<bool> submitFunc, 
-            Func<bool> isAutoPlayFunc, 
-            float startOffset = 0.1f,
-            float endOffset = 0.1f,
-            float charInterval = 0.05f,
-            float charReturnInterval = 0.1f,
-            bool waitAtMark = true,
-            TMP_Text autoSizeText = null,
-            CancellationToken ct = default)
+
+        public async static UniTask DOTextAsync(string context, Action<string> setText,
+            Func<(AudioClip clip, float interval)> getMessageClip, Func<AudioClip> getSubmitClip,
+            Action<AudioClip> playSe, Action<bool> showWaitInputIcon, bool isWaitInput, Func<bool> submitFunc,
+            Func<bool> isAutoPlayFunc, Func<char, float> charInterval, float startOffset = 0.1f, float endOffset = 0.1f,
+            bool waitAtMark = true, TMP_Text autoSizeText = null, CancellationToken ct = default)
         {
             var prefix = "";
             if (autoSizeText != null)
@@ -108,22 +68,29 @@ namespace MornNovel
                 autoSizeText.text = "";
                 autoSizeText.ForceMeshUpdate();
             }
-            
+
             setText("");
             await UniTask.Delay(TimeSpan.FromSeconds(startOffset), cancellationToken: ct);
             var sb = new StringBuilder();
             var nextSeTime = 0f;
-            foreach (var c in context)
+            for (var i = 0; i < context.Length; i++)
             {
-                if (c == '@' && waitAtMark)
+                var nextChar = context[i];
+                if (nextChar == '@' && waitAtMark)
                 {
                     await WaitSubmit();
                 }
                 else
                 {
-                    sb.Append(c);
+                    sb.Append(nextChar);
                     setText(prefix + sb);
-                    if (Time.time >= nextSeTime)
+                    var canSe = nextChar switch
+                    {
+                        '\n' => false, // 改行はSEを鳴らさない
+                        '@'  => false,
+                        _    => true,
+                    };
+                    if (Time.time >= nextSeTime && canSe)
                     {
                         var (clip, interval) = getMessageClip();
                         if (clip != null)
@@ -132,10 +99,23 @@ namespace MornNovel
                             nextSeTime = Time.time + interval;
                         }
                     }
-                    
-                    var waitInterval = c == '\n' ? charReturnInterval : charInterval;
+
+                    var waitInterval = charInterval(nextChar);
                     if (await WaitSecondsReturnSkipped(waitInterval, submitFunc, ct))
                     {
+                        if (waitAtMark)
+                        {
+                            // 次の@まで進める
+                            while (i + 1 < context.Length && context[i + 1] != '@')
+                            {
+                                sb.Append(context[i + 1]);
+                                i++;
+                            }
+
+                            setText(prefix + sb);
+                            continue;
+                        }
+
                         break;
                     }
                 }
@@ -145,7 +125,7 @@ namespace MornNovel
             {
                 context = context.Replace("@", "");
             }
-            
+
             setText(prefix + context);
             if (isWaitInput)
             {
