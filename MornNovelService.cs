@@ -68,6 +68,12 @@ namespace MornNovel
 
         public void SetNovelAddress(MornNovelAddress novelAddress, MornNovelSetType novelSetType)
         {
+            if (CurrentNovelAddress.Key== novelAddress.Key &&
+                NovelSetType == novelSetType)
+            {
+                return;
+            }
+            
             CurrentNovelAddress = novelAddress;
             NovelSetType = novelSetType;
             _onNovelSet.OnNext(novelAddress);
